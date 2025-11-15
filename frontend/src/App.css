@@ -1,112 +1,42 @@
-.App {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f7f9fc;
-  color: #1a1a1a;
-  min-height: 100vh;
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
 }
 
-.App-header {
-  padding: 1.5rem;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-.App-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.log-feed-container {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-}
-
-.log-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 0.75rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  border-left: 4px solid #ddd;
-  animation: slideIn 0.3s ease-out;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-.log-card-icon {
-  font-size: 1.4rem;
-  flex-shrink: 0;
-}
-
-.log-message {
-  flex: 1;
-  word-break: break-word;
-}
-
-.log-message code {
-  background: #f1f3f5;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.85em;
-}
-
-/* Event-specific styles */
-.log-trigger { border-left-color: #4361ee; }
-.log-step    { border-left-color: #7209b7; }
-.log-skip    { border-left-color: #6c757d; opacity: 0.8; }
-.log-action  { border-left-color: #2d6a4f; }
-.log-error   { border-left-color: #d00000; background: #ffecec; }
-
-/* Status Badge */
-.status-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.status-dot.connecting { background: #ffba08; animation: pulse 1.5s infinite; }
-.status-dot.connected  { background: #06d6a0; }
-.status-dot.error      { background: #ef476f; }
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .App-header {
-    flex-direction: column;
-    text-align: center;
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
   }
-  .log-card {
-    padding: 0.75rem;
-    font-size: 0.9rem;
+  to {
+    transform: rotate(360deg);
   }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
 }
