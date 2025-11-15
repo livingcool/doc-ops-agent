@@ -5,4 +5,4 @@
 
 ### New Features: Added /api/v6/error-handling endpoint.
 
-### New Features: Added /api/v8/redirect endpoint.
+
