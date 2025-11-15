@@ -8,7 +8,7 @@ The core functionalities include:
 
 * **Document Ingestion:** Loads text files, splits them into chunks, creates embeddings, and stores them in a vector database for efficient searching.
 * **Query Enhancement:** Automatically expands short user queries to improve the relevance of search results.
-* **Conversational Memory:** Remembers the last few questions and answers to provide context-aware responses in an ongoing conversation.
+* **Conversational Memory:** Rememberss the last few questions and answers to provide context-aware responses in an ongoing conversation.
 * **Advanced RAG Pipeline:** Retrieves relevant document chunks, assesses a confidence score, and generates a detailed, well-structured answer.
 * **Source Citing:** Lists the source documents (and pages) that were used to generate the answer, along with a relevance score for each.
 * **Interactive Console:** Provides a user-friendly command-line interface to interact with the system.
