@@ -6,4 +6,6 @@
 ### New Features: Added /api/v6/error endpoint
 
 
+added new functionality 
+logging the output
 
