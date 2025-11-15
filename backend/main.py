@@ -18,12 +18,16 @@ load_dotenv()
 GITHUB_SECRET_TOKEN = os.getenv("GITHUB_SECRET_TOKEN")
 GITHUB_API_TOKEN = os.getenv("GITHUB_API_TOKEN")
 
+# --- Define base directory for pathing ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_FILE_PATH = os.path.join(BASE_DIR, "doc_ops_agent.log")
+
 # --- Setup Logging ---
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(message)s',
     handlers=[
-        logging.FileHandler("doc_ops_agent.log"),
+        logging.FileHandler(LOG_FILE_PATH),
         logging.StreamHandler() # To also see logs in the console
     ]
 )
