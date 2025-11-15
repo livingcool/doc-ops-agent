@@ -6,4 +6,4 @@
 ### New Features: Added /api/v6/error endpoint
 
 
-
+added doc_ops_agent.log format and logging of the output for further documentation 
