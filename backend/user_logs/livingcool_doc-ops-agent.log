@@ -1,0 +1,3 @@
+[LOG-STEP] Cloned repo. Starting to index documentation...
+[LOG-ERROR] Onboarding failed with an unexpected error: generator didn't stop after throw()
+[LOG-ERROR] An uncaught error occurred: no running event loop

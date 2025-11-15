@@ -1,0 +1,8 @@
+{
+  "livingcool_doc-ops-agent": {
+    "repo_full_name": "livingcool/doc-ops-agent",
+    "encrypted_github_token": "gAAAAABpGKcjoHN6GkAGVChMD82FxYqavaAdzR2P2ZXXa_Md0rec75SJe2fVRssuu5DjY8Kv8K2v3FzM119QCXGKCEYZzexeHdvtq_yZByW5Xy5O4VsBIkG_77GorreXaVnNN58h0HPn",
+    "encrypted_gemini_key": "gAAAAABpGKckFxf6xPOKiHufDjGulK_VVM0uIDidcTpCKizWq7P9l8OB-1LSGRPECRsVbTgM9LsxcnNgjmh7VCK58tb8dTVza2E7B3SP25lRjby2MVD-qgT6ESci3rF21XVWBcAjjLvi",
+    "model_name": "gemini-2.5-flash-lite"
+  }
+}

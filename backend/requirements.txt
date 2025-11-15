@@ -20,3 +20,6 @@ python-dotenv
 # --- Local Embeddings (Replaces Google for FAISS) ---
 sentence-transformers
 langchain-huggingface
+# ... all your other libraries ...
+cryptography
+GitPython
