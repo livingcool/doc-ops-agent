@@ -1,25 +1,18 @@
-# --- Core Web Server ---
 fastapi
 uvicorn[standard]
 sse-starlette
-
-# --- AI & Vector DB ---
-faiss-cpu
-google-generativeai
-langchain
-langchain-google-genai
-langchain-community
-
-# --- GitHub API ---
+requests
 PyGithub
-requests # <--- ADD THIS LINE
-
-# --- Utilities ---
+pydantic
+pydantic-settings
 python-dotenv
-
-# --- Local Embeddings (Replaces Google for FAISS) ---
-sentence-transformers
-langchain-huggingface
-# ... all your other libraries ...
 cryptography
 GitPython
+langchain
+langchain-core
+langchain-community
+langchain-google-genai
+langchain-text-splitters
+langchain-huggingface
+sentence-transformers
+faiss-cpu

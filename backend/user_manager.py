@@ -2,8 +2,9 @@ import json
 import os
 import shutil
 import git
-import time # Import time for retries
-import stat # Import stat for file permissions
+import time 
+import stat 
+import asyncio
 from cryptography.fernet import Fernet
 from contextlib import contextmanager
 
@@ -11,10 +12,9 @@ from contextlib import contextmanager
 USERS_FILE = 'users.json'
 LOGS_DIR = 'user_logs'
 REPO_CLONE_DIR = 'temp_user_repos'
-
-# --- Encryption ---
 ENCRYPTION_KEY_FILE = 'app_secret.key'
 
+# --- Encryption ---
 def get_encryption_key():
     if os.path.exists(ENCRYPTION_KEY_FILE):
         with open(ENCRYPTION_KEY_FILE, 'rb') as f:
@@ -33,34 +33,8 @@ def encrypt_data(data: str) -> str:
 def decrypt_data(encrypted_data: str) -> str:
     return cipher_suite.decrypt(encrypted_data.encode()).decode()
 
-# --- NEW: Robust rmtree for Windows ---
-def force_rmtree(path, max_retries=5):
-    """
-    Robustly deletes a directory, handling Windows file lock errors.
-    """
-    for attempt in range(max_retries):
-        try:
-            # First, try to fix read-only attributes (common in .git)
-            for root, dirs, files in os.walk(path):
-                for fname in files:
-                    full_path = os.path.join(root, fname)
-                    os.chmod(full_path, stat.S_IWRITE)
-                for dname in dirs:
-                    full_path = os.path.join(root, dname)
-                    os.chmod(full_path, stat.S_IWRITE)
-            
-            shutil.rmtree(path)
-            print(f"Successfully cleaned up {path}")
-            return
-        except PermissionError as e:
-            print(f"Warning: PermissionError on attempt {attempt+1}/{max_retries}. Retrying in 1s... ({e})")
-            time.sleep(1)
-        except Exception as e:
-            print(f"Error deleting {path}: {e}")
-            break # Don't retry on other errors
-    print(f"FATAL: Could not delete directory {path} after {max_retries} attempts.")
-
 # --- User Management ---
+
 def get_all_users() -> dict:
     if not os.path.exists(USERS_FILE): return {}
     try:
@@ -79,6 +53,7 @@ def get_user_id_by_repo(repo_full_name: str) -> str | None:
     return None
 
 def get_user_credentials(user_id: str) -> dict | None:
+    """Gets and decrypts a specific user's credentials (excluding Gemini key)."""
     user_data = get_all_users().get(user_id)
     if not user_data: return None
     try:
@@ -86,26 +61,50 @@ def get_user_credentials(user_id: str) -> dict | None:
             "user_id": user_id,
             "repo_full_name": user_data.get('repo_full_name'),
             "github_token": decrypt_data(user_data.get('encrypted_github_token')),
-            "gemini_key": decrypt_data(user_data.get('encrypted_gemini_key')),
             "model_name": user_data.get('model_name', 'gemini-1.5-pro-latest')
         }
     except Exception as e:
         print(f"Error decrypting keys for user {user_id}: {e}")
         return None
 
-def create_user(repo_full_name: str, github_token: str, gemini_key: str, model_name: str) -> str:
+def create_user(repo_full_name: str, github_token: str, model_name: str) -> str:
+    """Adds a new user to the database (excluding Gemini key)."""
     user_id = repo_full_name.replace('/', '_')
+    
     users = get_all_users()
     users[user_id] = {
         "repo_full_name": repo_full_name,
         "encrypted_github_token": encrypt_data(github_token),
-        "encrypted_gemini_key": encrypt_data(gemini_key),
         "model_name": model_name or 'gemini-1.5-pro-latest'
     }
     save_users(users)
     return user_id
 
-# --- UPDATED: User-Specific Logging ---
+# --- NEW: Robust Deletion Logic (Fixes Windows File Lock) ---
+def force_rmtree(path, max_retries=5):
+    for attempt in range(max_retries):
+        try:
+            # Fix read-only attributes (common in .git)
+            for root, dirs, files in os.walk(path):
+                for fname in files:
+                    full_path = os.path.join(root, fname)
+                    os.chmod(full_path, stat.S_IWRITE)
+                for dname in dirs:
+                    full_path = os.path.join(root, dname)
+                    os.chmod(full_path, stat.S_IWRITE)
+            
+            shutil.rmtree(path)
+            print(f"Successfully cleaned up {path}")
+            return
+        except PermissionError as e:
+            print(f"Warning: PermissionError on attempt {attempt+1}/{max_retries}. Retrying in 1s... ({e})")
+            time.sleep(1)
+        except Exception as e:
+            print(f"Error deleting {path}: {e}")
+            break
+    print(f"FATAL: Could not delete directory {path} after {max_retries} attempts.")
+
+# --- User-Specific Logging and Cloning ---
 @contextmanager
 def user_logger(user_id: str):
     log_file_path = os.path.join(LOGS_DIR, f"{user_id}.log")
@@ -124,17 +123,12 @@ def user_logger(user_id: str):
         except Exception as e:
             print(f"Failed to write to log file {log_file_path}: {e}")
             
-        # --- FIX for 'coroutine was never awaited' ---
         if push_to_global_queue:
-            import asyncio
             try:
-                # Try to get the running loop
                 loop = asyncio.get_running_loop()
                 loop.create_task(push_to_global_queue(event, data))
             except RuntimeError:
-                # If no loop (e.g., in a thread), run in a new one
                 asyncio.run(push_to_global_queue(event, data))
-        # --- END OF FIX ---
 
     try:
         yield log_and_push
@@ -142,14 +136,13 @@ def user_logger(user_id: str):
         log_and_push("log-error", f"An uncaught error occurred: {e}")
         raise e
 
-# --- UPDATED: Onboarding Logic ---
 @contextmanager
 def clone_repo(repo_full_name: str, github_token: str) -> str | None:
     repo_url = f"https://{github_token}@github.com/{repo_full_name}.git"
     clone_path = os.path.join(REPO_CLONE_DIR, repo_full_name.replace('/', '_'))
     
     if os.path.exists(clone_path):
-        force_rmtree(clone_path) # Use our new robust delete
+        force_rmtree(clone_path)
         
     try:
         print(f"Cloning repo {repo_full_name} to {clone_path}...")
@@ -159,6 +152,5 @@ def clone_repo(repo_full_name: str, github_token: str) -> str | None:
         print(f"Failed to clone repo {repo_full_name}: {e}")
         yield None
     finally:
-        # Clean up the repo
         if os.path.exists(clone_path):
-            force_rmtree(clone_path) # Use our new robust delete
+            force_rmtree(clone_path)
