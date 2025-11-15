@@ -2,6 +2,7 @@ import os
 import hmac
 import hashlib
 import asyncio
+import logging
 import requests # <--- IMPORTED
 from dotenv import load_dotenv
 from github import Github # PyGithub library
@@ -16,6 +17,17 @@ import agent_logic
 load_dotenv()
 GITHUB_SECRET_TOKEN = os.getenv("GITHUB_SECRET_TOKEN")
 GITHUB_API_TOKEN = os.getenv("GITHUB_API_TOKEN")
+
+# --- Setup Logging ---
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(message)s',
+    handlers=[
+        logging.FileHandler("doc_ops_agent.log"),
+        logging.StreamHandler() # To also see logs in the console
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # --- Global App Setup ---
 app = FastAPI()
@@ -75,6 +87,7 @@ async def handle_github_webhook(request: Request, x_hub_signature_256: str = Hea
         pr_title = payload.get("pull_request", {}).get("title", "Untitled PR")
         repo_name = payload.get("repository", {}).get("full_name")
         pr_number = payload.get("pull_request", {}).get("number")
+        user_name = payload.get("pull_request", {}).get("user", {}).get("login", "unknown-user")
         
         # --- START OF THE FIX ---
         # We need the PR's diff_url to fetch the diff
@@ -101,11 +114,13 @@ async def handle_github_webhook(request: Request, x_hub_signature_256: str = Hea
             # --- 6. Start the Agent (in the background) ---
             asyncio.create_task(
                 agent_logic.run_agent_analysis(
+                    logger=logger,
                     broadcaster=push_log,
                     git_diff=git_diff,
                     pr_title=pr_title,
                     repo_name=repo_name,
-                    pr_number=pr_number
+                    pr_number=pr_number,
+                    user_name=user_name
                 )
             )
 

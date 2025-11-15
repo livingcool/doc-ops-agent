@@ -1,5 +1,6 @@
 import os
 import asyncio
+import logging
 from github import Github
 from langchain_core.documents import Document
 
@@ -25,12 +26,12 @@ except Exception as e:
     print(f"🔥 FATAL ERROR: Failed to initialize AI components: {e}")
     retriever, analyzer_chain, rewriter_chain = None, None, None
 
-# --- GitHub PR Creation Logic ---
+# --- GitHub PR Creation Logic (Synchronous) ---
+def _create_github_pr_sync(logger, repo_name, pr_number, pr_title, pr_body, source_files, new_content):
+    """Creates a new branch, updates files, and opens a pull request. (BLOCKING)"""
+    # Get a logger instance within the thread to ensure it's configured
+    logger = logging.getLogger(__name__)
 
-async def create_github_pr(repo_name, pr_number, pr_title, pr_body, source_files, new_content):
-    """
-    Creates a new branch, updates files, and opens a pull request.
-    """
     if not GITHUB_API_TOKEN:
         return "Error: GITHUB_API_TOKEN not set."
 
@@ -53,7 +54,7 @@ async def create_github_pr(repo_name, pr_number, pr_title, pr_body, source_files
             )
         except Exception as e:
             if "Reference already exists" in str(e):
-                print(f"Branch '{new_branch_name}' already exists. Proceeding...")
+                logger.info(f"Branch '{new_branch_name}' already exists. Proceeding...")
             else:
                 raise e
 
@@ -74,20 +75,20 @@ async def create_github_pr(repo_name, pr_number, pr_title, pr_body, source_files
                     sha=contents.sha,
                     branch=new_branch_name
                 )
-                print(f"Updated file: {file_path}")
+                logger.info(f"Successfully updated file: {file_path}")
                 files_updated_count += 1
             except Exception as e:
-                print(f"Failed to update file {file_path}: {e}. Skipping...")
+                logger.warning(f"Failed to update file {file_path}: {e}. Skipping...")
 
         # 6. Create the Pull Request
         if files_updated_count == 0:
-            print("No files were successfully updated, skipping PR creation.")
+            logger.warning("No files were successfully updated, skipping PR creation.")
             return "Error: No files were updated, so no PR was created."
 
         pr = repo.create_pull(
             title=pr_title,
             body=pr_body,
-            head=new_branch_name,      # The new branch
+            head=new_branch_name,
             base=repo.default_branch  # The branch to merge into
         )
         
@@ -95,17 +96,24 @@ async def create_github_pr(repo_name, pr_number, pr_title, pr_body, source_files
         return pr.html_url
 
     except Exception as e:
-        print(f"Error creating GitHub PR: {e}")
+        logger.error(f"Error creating GitHub PR: {e}", exc_info=True)
         return f"Error: {e}"
 
+# --- Async Wrapper for GitHub PR Creation ---
+async def create_github_pr_async(*args, **kwargs):
+    """
+    Runs the synchronous GitHub PR creation function in a separate thread
+    to avoid blocking the asyncio event loop.
+    """
+    # Use asyncio.to_thread which correctly handles passing kwargs to the thread.
+    # This is the modern replacement for loop.run_in_executor for this use case.
+    pr_url = await asyncio.to_thread(_create_github_pr_sync, *args, **kwargs)
+    return pr_url
 
 # --- Updated Core Agent Logic ---
 
-async def run_agent_analysis(broadcaster, git_diff: str, pr_title: str, repo_name: str, pr_number: int):
-    """
-    This is the main "brain" of the agent. It runs the full
-    analysis-retrieval-rewrite pipeline.
-    """
+async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, repo_name: str, pr_number: int, user_name: str):
+    """This is the main 'brain' of the agent. It runs the full analysis-retrieval-rewrite pipeline."""
     
     if not retriever:
         print("Agent failed: AI components are not initialized.")
@@ -169,28 +177,53 @@ async def run_agent_analysis(broadcaster, git_diff: str, pr_title: str, repo_nam
             "new_content": new_documentation,
             "source_files": source_files,
             "pr_title": f"docs: AI update for '{pr_title}' (PR #{pr_number})",
-            "pr_body": f"This is an AI-generated documentation update based on the changes in PR #{pr_number}.\n\n**Original PR:** '{pr_title}'\n**AI Analysis:** {analysis_summary}"
+            "pr_body": f"This is an AI-generated documentation update for PR #{pr_number}, originally authored by **@{user_name}**.\n\n**Original PR:** '{pr_title}'\n**AI Analysis:** {analysis_summary}"
         }
 
         # --- Step 6: Create the GitHub PR ---
         await broadcaster("log-step", "Attempting to create GitHub pull request...")
         
-        pr_url = await create_github_pr(
-            repo_name=repo_name,
-            pr_number=pr_number,
-            pr_title=pr_data["pr_title"],
-            pr_body=pr_data["pr_body"],
-            source_files=pr_data["source_files"],
-            new_content=pr_data["new_content"]
-        )
+        try:
+            pr_url = await create_github_pr_async(
+                repo_name=repo_name,
+                logger=logger,
+                pr_number=pr_number,
+                pr_title=pr_data["pr_title"],
+                pr_body=pr_data["pr_body"],
+                source_files=pr_data["source_files"],
+                new_content=pr_data["new_content"]
+            )
 
-        if "Error" in pr_url:
-            await broadcaster("log-error", f"Failed to create PR: {pr_url}")
+            if "Error" in pr_url:
+                result_message = f"Failed to create PR. Reason: {pr_url}"
+                await broadcaster("log-error", f"Failed to create PR: {pr_url}")
+            else:
+                result_message = f"Successfully created documentation PR: {pr_url}"
+                await broadcaster("log-action", f"✅ Successfully created PR: {pr_url}")
+
+        except Exception as e:
+            result_message = f"Agent failed during PR creation with error: {e}"
+            await broadcaster("log-error", f"Agent failed with error: {e}")
+            # Log the exception traceback for debugging
+            logger.error(f"Agent failed for PR #{pr_number} ({repo_name}) with error: {e}", exc_info=True)
+
+        # --- Step 7: Log the final result ---
+        if "Successfully" in result_message:
+            # On success, log the specific format you requested.
+            log_entry = (
+                f"This is an AI-generated documentation update for PR #{pr_number}, "
+                f"originally authored by @{user_name}.\n"
+                f"Original PR: '{pr_title}' AI Analysis: {analysis_summary}"
+            )
+            logger.info(log_entry)
         else:
-            await broadcaster("log-action", f"✅ Successfully created PR: {pr_url}")
+            # On failure, log a simpler error message for clarity.
+            logger.error(
+                f"AGENT FAILED for PR #{pr_number} ({repo_name}). Reason: {result_message}"
+            )
 
     except Exception as e:
-        print(f"🔥 AGENT ERROR: {e}")
+        logger.error(f"Agent failed for PR #{pr_number} ({repo_name}) with error: {e}", exc_info=True)
         await broadcaster("log-error", f"Agent failed with error: {e}")
         return
 
