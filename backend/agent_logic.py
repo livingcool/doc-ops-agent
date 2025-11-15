@@ -196,5 +196,87 @@ async def run_agent_analysis(broadcaster, git_diff: str, pr_title: str, repo_nam
 
 # --- Self-Test ---
 if __name__ == "__main__":
-    print("This file is not meant to be run directly.")
-    print("Please run 'uvicorn main:app --reload' from the 'backend' directory.")
+    """
+    This allows you to run this file directly to test it.
+    
+    1. Make sure your .env file and vector store are working.
+    2. Run this command from the 'backend' directory:
+       python agent_logic.py
+    """
+    
+    # --- Mock broadcaster for testing ---
+    class MockBroadcaster:
+        async def push(self, event, data):
+            print(f"[LOG-{event.upper()}]: {data}")
+    
+    mock_broadcaster = MockBroadcaster()
+
+    # --- Test 1: Functional Change ---
+    test_diff_functional = """
+    --- a/api/routes.py
+    +++ b/api/routes.py
+    @@ -10,5 +10,6 @@
+     @app.route('/api/v1/users')
+     def get_users():
+         return jsonify(users)
+    +
+    +@app.route('/api/v1/users/profile')
+    +def get_user_profile():
+    +    return jsonify({"name": "Test User", "status": "active"})
+    """
+    
+    print("\n--- Running Self-Test (Functional Change) ---")
+    
+    async def run_test_functional():
+        if not retriever:
+            print("Skipping test, AI components not loaded.")
+            return
+            
+        result = await run_agent_analysis(
+            broadcaster=mock_broadcaster,
+            git_diff=test_diff_functional,
+            pr_title="feat: Add user profile endpoint"
+        )
+        if result:
+            print("\n--- TEST RESULT ---")
+            print(f"PR Title: {result['pr_title']}")
+            print(f"Source Files: {result['source_files']}")
+            print(f"New Content Snippet: {result['new_content'][:150]}...")
+            print("--- Test Passed ---")
+        else:
+            print("--- Test Failed (Functional) ---")
+
+    # --- Test 2: Trivial Change ---
+    test_diff_trivial = """
+    --- a/api/routes.py
+    +++ b/api/routes.py
+    @@ -1,3 +1,3 @@
+     # This file contains all API routes for our app.
+     from flask import Flask, jsonify
+     
+     # TODO: Add more routes later
+    """
+    
+    print("\n--- Running Self-Test (Trivial Change) ---")
+    
+    async def run_test_trivial():
+        if not retriever:
+            print("Skipping test, AI components not loaded.")
+            return
+            
+        result = await run_agent_analysis(
+            broadcaster=mock_broadcaster,
+            git_diff=test_diff_trivial,
+            pr_title="refactor: Clean up comments"
+        )
+        if result is None:
+            print("--- Test Passed (Correctly skipped) ---")
+        else:
+            print("--- Test Failed (Should have skipped) ---")
+
+    # Run the async tests
+    async def main_test():
+        await run_test_functional()
+        await run_test_trivial()
+
+    asyncio.run(main_test())
