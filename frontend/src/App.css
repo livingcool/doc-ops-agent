@@ -1,256 +1,186 @@
 /* ============================================================= */
-/*  3D Animated Dashboard – App.css                              */
-/*  (drop-in replacement for your current file)                 */
+/*  App.css – Component-Specific Styles                         */
 /* ============================================================= */
 
-:root {
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-
-  /* ---- Color palette (dark neon) ---- */
-  --bg-gradient: linear-gradient(135deg, #1e0c3f 0%, #3c1a5b 50%, #0a041a 100%);
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-  --text-primary: #f0f0f0;
-  --text-muted: #b0b0b0;
-  --accent: #58cfff;
-}
-
-/* ------------------------------------------------------------- */
-/*  Global reset & base                                         */
-/* ------------------------------------------------------------- */
-*, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
-
-html, body { height:100%; }
-body {
-  font-family: var(--font-sans);
-  background: var(--bg-gradient);
-  color: var(--text-primary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x:hidden;
-}
-
-/* ------------------------------------------------------------- */
-/*  Root container – centers everything                         */
-/* ------------------------------------------------------------- */
-#root {
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  min-height:100vh;
-  padding:20px;
-}
-
-/* ------------------------------------------------------------- */
-/*  Main glass panel                                            */
-/* ------------------------------------------------------------- */
 .App {
-  width:100%;
-  max-width:820px;
-  margin:20px auto;
-  padding:28px;
-  background: var(--glass-bg);
-  border-radius:20px;
-  border:1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  width: 100%;
+  max-width: 820px;
+  margin: 20px auto;
+  padding: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  position:relative;
-  overflow:hidden;
+  position: relative;
+  overflow: hidden;
 }
 
-/* subtle inner glow */
 .App::before {
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:20px;
-  padding:2px;
-  background:linear-gradient(45deg, rgba(88,207,255,0.15), transparent);
-  mask:linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-  mask-composite:exclude;
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 2px;
+  background: linear-gradient(45deg, rgba(88, 207, 255, 0.15), transparent);
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
   -webkit-mask-composite: destination-out;
-  pointer-events:none;
+  pointer-events: none;
 }
 
-/* ------------------------------------------------------------- */
-/*  Header                                                      */
-/* ------------------------------------------------------------- */
 .App-header {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding-bottom:18px;
-  margin-bottom:24px;
-  border-bottom:1px solid rgba(255,255,255,.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, .2);
+  flex-wrap: wrap;
+  gap: 1rem;
 }
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .App-header h1 {
-  margin:0;
-  font-size:1.9rem;
-  font-weight:600;
-  background:linear-gradient(90deg, #58cfff, #a855f7);
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 600;
+  background: linear-gradient(90deg, #58cfff, #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-/* ------------------------------------------------------------- */
-/*  Status badge (3-D glowing dot)                              */
-/* ------------------------------------------------------------- */
 .status-badge {
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 14px;
-  border-radius:999px;
-  font-weight:600;
-  font-size:0.875rem;
-  backdrop-filter:blur(4px);
-  -webkit-backdrop-filter:blur(4px);
-  transition:transform .2s ease, box-shadow .2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: transform .2s ease;
 }
-.status-badge:hover { transform:translateY(-2px); }
+.status-badge:hover { transform: translateY(-2px); }
 
-.status-badge.connecting { background:#fff3cd33; color:#ffc107; }
-.status-badge.connected  { background:#d1e7dd33; color:#34d399; }
-.status-badge.error      { background:#f8d7da33; color:#f87171; }
+.status-badge.connecting { background: #fff3cd33; color: #ffc107; }
+.status-badge.connected { background: #d1e7dd33; color: #34d399; }
+.status-badge.error { background: #f8d7da33; color: #f87171; }
 
 .status-dot {
-  width:10px; height:10px;
-  border-radius:50%;
-  position:relative;
-  animation:pulse 1.6s infinite;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  position: relative;
+  animation: pulse 1.6s infinite;
 }
 .status-dot::after {
-  content:"";
-  position:absolute;
-  inset:-6px;
-  border-radius:50%;
-  background:currentColor;
-  opacity:0;
-  animation:glow 1.6s infinite;
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  animation: glow 1.6s infinite;
 }
-.status-dot.connecting { color:#ffc107; }
-.status-dot.connected  { color:#34d399; }
-.status-dot.error      { color:#f87171; }
+.status-dot.connecting { color: #ffc107; }
+.status-dot.connected { color: #34d399; }
+.status-dot.error { color: #f87171; }
 
-@keyframes pulse {
-  0%,100% { transform:scale(1); }
-  50%     { transform:scale(1.3); }
-}
-@keyframes glow {
-  0%,100% { opacity:0; transform:scale(1); }
-  50%     { opacity:.4; transform:scale(1.6); }
-}
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+@keyframes glow { 0%, 100% { opacity: 0; transform: scale(1); } 50% { opacity: .4; transform: scale(1.6); } }
 
-/* ------------------------------------------------------------- */
-/*  Log feed container – parallax scroll                        */
-/* ------------------------------------------------------------- */
 .log-feed-container {
-  max-height:640px;
-  overflow-y:auto;
-  padding-right:12px;
-  perspective:1200px;               /* enables 3-D children */
-  scroll-behavior:smooth;
+  max-height: 640px;
+  overflow-y: auto;
+  padding-right: 12px;
+  perspective: 1200px;
+  scroll-behavior: smooth;
 }
 
-/* custom scrollbar (optional) */
-.log-feed-container::-webkit-scrollbar { width:8px; }
-.log-feed-container::-webkit-scrollbar-track { background:transparent; }
+.log-feed-container::-webkit-scrollbar { width: 8px; }
+.log-feed-container::-webkit-scrollbar-track { background: transparent; }
 .log-feed-container::-webkit-scrollbar-thumb {
-  background:rgba(255,255,255,.2);
-  border-radius:4px;
+  background: rgba(255, 255, 255, .2);
+  border-radius: 4px;
 }
 
-/* ------------------------------------------------------------- */
-/*  Log card – 3-D lift & tilt on hover                         */
-/* ------------------------------------------------------------- */
 .log-card {
-  display:flex;
-  align-items:flex-start;
-  gap:14px;
-  padding:16px;
-  margin-bottom:12px;
-  background:rgba(0,0,0,.25);
-  border-radius:12px;
-  border-left:5px solid transparent;
-  color:#e0e0e0;
-  font-size:0.95rem;
-  line-height:1.5;
-  transform-style:preserve-3d;
-  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
-  opacity:0;
-  animation:cardEnter .4s forwards;
-  animation-delay:calc(var(--i,0) * .06s);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  background: rgba(0, 0, 0, .25);
+  border-radius: 12px;
+  border-left: 5px solid transparent;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  transform-style: preserve-3d;
+  transition: transform .25s ease, box-shadow .25s ease;
 }
 
-/* entrance animation */
-@keyframes cardEnter {
-  from { opacity:0; transform:translateY(20px) rotateX(-15deg); }
-  to   { opacity:1; transform:translateY(0) rotateX(0); }
-}
-
-/* hover 3-D effect */
 .log-card:hover {
-  transform:
-    translateZ(30px)
-    rotateX(4deg)
-    rotateY(-2deg)
-    scale(1.02);
-  box-shadow:
-    0 20px 40px rgba(0,0,0,.3),
-    0 0 20px rgba(88,207,255,.2);
-  z-index:1;
+  transform: translateZ(30px) rotateX(4deg) rotateY(-2deg) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .3), 0 0 20px rgba(88, 207, 255, .2);
+  z-index: 1;
 }
 
-/* icon */
 .log-card-icon {
-  font-size:1.5rem;
-  transform:translateZ(20px);
+  font-size: 1.5rem; /* Emojis look great at this size */
+  transform: translateZ(20px);
 }
 
-/* message */
 .log-message {
-  font-family:var(--font-mono);
-  word-break:break-all;
-  flex:1;
+  font-family: var(--font-mono);
+  word-break: break-all;
+  flex: 1;
 }
 
-/* ------------------------------------------------------------- */
-/*  Card type colours (keep your original left borders)        */
-/* ------------------------------------------------------------- */
-.log-trigger { border-left-color:#0d6efd; }
-.log-step    { border-left-color:#6c757d; color:#b0b0b0; }
-.log-skip    { border-left-color:#ffc107; background:rgba(255,193,7,.12); }
-.log-action  { border-left-color:#198754; background:rgba(25,135,84,.12); }
-.log-error   { border-left-color:#dc3545; background:rgba(220,53,69,.12); color:#ffc0c0; }
+.log-trigger { border-left-color: #0d6efd; }
+.log-step { border-left-color: #6c757d; color: #b0b0b0; }
+.log-skip { border-left-color: #ffc107; background: rgba(255, 193, 7, .12); }
+.log-action { border-left-color: #198754; background: rgba(25, 135, 84, .12); }
+.log-error { border-left-color: #dc3545; background: rgba(220, 53, 69, .12); color: #ffc0c0; }
 
-/* ------------------------------------------------------------- */
-/*  Links inside .log-action (your existing style)               */
-/* ------------------------------------------------------------- */
 .log-action a {
-  color:#58cfff;
-  font-weight:600;
-  text-decoration:none;
-  border-bottom:1px solid #58cfff;
-  transition:all .2s ease;
+  color: #58cfff;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid #58cfff;
+  transition: all .2s ease;
 }
 .log-action a:hover {
-  background:#58cfff;
-  color:#1e0c3f;
-  border-radius:3px;
-  padding:0 4px;
+  background: #58cfff;
+  color: #1e0c3f;
+  border-radius: 3px;
+  padding: 0 4px;
 }
 
-/* ------------------------------------------------------------- */
-/*  Responsive tweaks                                            */
-/* ------------------------------------------------------------- */
-@media (max-width:600px) {
-  .App { padding:20px; margin:12px; }
-  .App-header h1 { font-size:1.6rem; }
-  .log-card { padding:14px; gap:12px; }
-  .log-card-icon { font-size:1.35rem; }
+/* Style for your DarkModeToggle */
+.dark-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 10px 14px;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+.dark-toggle:hover {
+  border-color: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .App { padding: 20px; margin: 12px; }
+  .App-header h1 { font-size: 1.6rem; }
+  .log-card { padding: 14px; gap: 12px; }
+  .log-card-icon { font-size: 1.35rem; }
 }

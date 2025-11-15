@@ -10,3 +10,5 @@
 [LOG-ERROR] Failed to clone repo. Check token and repo name.
 [LOG-ERROR] Failed to clone repo. Check token and repo name.
 [LOG-ERROR] Failed to clone repo. Check token and repo name.
+[LOG-STEP] Cloned repo. Starting to index documentation...
+[LOG-ACTION] ✅ Onboarding complete. Agent is now active.
