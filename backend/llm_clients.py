@@ -10,7 +10,7 @@ load_dotenv()
 
 # Initialize the Generative AI model
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash-lite", 
+    model="gemini-1.5-pro-latest", 
     temperature=0.2 
 )
 
@@ -37,7 +37,6 @@ def get_analyzer_chain():
     - Diff changing an API route: {{"is_functional_change": true, "analysis_summary": "Functional change: Modified the '/api/v1/users' endpoint."}}
     - Diff changing button text: {{"is_functional_change": true, "analysis_summary": "Functional change: Updated user-facing text on the dashboard."}}
     """
-    # ^^^ THE FIX IS ABOVE: We added double curly braces {{ ... }} to the examples.
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -49,13 +48,14 @@ def get_analyzer_chain():
     
     return analyzer_chain
 
-# --- 2. The "Rewriter" Chain ---
+# --- 2. The "Rewriter" Chain (UPDATED) ---
 
 def get_rewriter_chain():
     """
     Returns a chain that rewrites documentation.
     """
     
+    # --- THIS PROMPT IS UPDATED ---
     system_prompt = """
     You are an expert technical writer. Your task is to rewrite old documentation 
     to match the new code changes.
@@ -65,13 +65,23 @@ def get_rewriter_chain():
     2. The 'git diff' of the new code.
     3. An analysis of what changed.
 
-    Your job is to return *only* the new, rewritten documentation.
+    Your job is to return the new, rewritten documentation.
     - Maintain the original tone and formatting (e.g., Markdown).
     - Do not add commentary like "Here is the new documentation:".
-    - Just output the final, corrected text.
-    - If the old docs are a complete file, rewrite the file. If they are snippets, 
-      coherently integrate the changes.
+    
+    **CRITICAL INSTRUCTION:** After rewriting the documentation, you MUST append
+    the relevant code diff. The final output must be in this format:
+    
+    [Your rewritten documentation text]
+    
+    ---
+    
+    ### Relevant Code Changes
+    ```diff
+    [The exact 'git diff' you were provided]
+    ```
     """
+    # --- END OF UPDATE ---
     
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -165,7 +175,7 @@ if __name__ == "__main__":
     # 3. Test Rewriter Chain
     print("\n--- Testing Rewriter Chain ---")
     try:
-        rewriter = get_rewrite_chain() # <-- Fixed typo from get_rewriter_chain
+        rewriter = get_rewriter_chain() # <-- Fixed typo
         test_old_docs = [
             Document(page_content="Our API has one user endpoint: /api/v1/users.", metadata={"source": "api.md"})
         ]
@@ -178,6 +188,8 @@ if __name__ == "__main__":
         })
         print(f"Response:\n{rewrite}")
         assert "/api/v1/users/profile" in rewrite
+        assert "Relevant Code Changes" in rewrite # Test new instruction
+        assert "--- a/api/routes.py" in rewrite # Test if diff is included
         print("Test Passed.")
     except Exception as e:
         print(f"Test Failed: {e}")
