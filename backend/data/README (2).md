@@ -6,64 +6,17 @@ Project Giva is a **Python-based RAG (Retrieval-Augmented Generation) system** t
 
 The core functionalities include:
 
-* **Document Ingestion:** Loads text files, splits them into chunks, creates embeddings, and stores them in a vector database for efficient searching.
-* **Query Enhancement:** Automatically expands short user queries to improve the relevance of search results.
-* **Conversational Memory:** Rememberss the last few questions and answers to provide context-aware responses in an ongoing conversation.
-* **Advanced RAG Pipeline:** Retrieves relevant document chunks, assesses a confidence score, and generates a detailed, well-structured answer.
-* **Source Citing:** Lists the source documents (and pages) that were used to generate the answer, along with a relevance score for each.
-* **Interactive Console:** Provides a user-friendly command-line interface to interact with the system.
-
-### 2. File Structure
-
-The main project logic is contained within the `e:\2025\Project_Learning\RAG\` directory.
-
-| File/Folder | Description |
-| :--- | :--- |
-| `app.py` | Main application entry point and RAG orchestration logic. |
-| `main.py` | A placeholder/scaffolding file, not used by `app.py`. |
-| `src/` | (Inferred) A package containing core RAG components. |
-| `src/__init__.py` | |
-| `src/document_loader.py` | (Inferred) Contains `load_all_documents`. |
-| `src/embedding.py` | (Inferred) Contains `EmbeddingPipeline`. |
-| `src/vectorstore.py` | (Inferred) Contains `VectorStore`. |
-| `src/retriever.py` | (Inferred) Contains `RAGRetriever`. |
-| *Other files* | Unrelated scripts or temporary files (see Section 6). |
-
-### 3. Code Explanation: `app.py`
-
-This is the central file that orchestrates the entire RAG pipeline.
-
-#### Key Components & Functions
-
-| Function | Purpose | Logic |
-| :--- | :--- | :--- |
-| `enhance_query_with_ai(...)` | To improve document retrieval for short or ambiguous user questions. | If a user's query is less than three words long, it asks the LLM to expand it into a more comprehensive search query, adding synonyms and context. For longer queries, it uses the original query. |
-| `rag_simple(...)` | A basic RAG implementation. | Retrieves the top *k* documents, combines their content into a single context, and passes it to the LLM with a straightforward prompt. **Note:** This function is defined but not used in the main execution loop. |
-| `rag_advanced(...)` | The primary, feature-rich RAG pipeline used by the application. | Retrieves documents based on the query, *top\_k* count, and a minimum similarity score (`min_score`). Constructs a list of **sources** (file name, page, similarity score). Calculates a **confidence** score (highest similarity score). Incorporates `conversation_history` into the LLM prompt. Uses a detailed, structured prompt to instruct the AI ("giva") on how to analyze and structure its answer. Returns a dictionary with `answer`, `sources`, `confidence`. |
-
-#### Main Execution Block (`if __name__ == "__main__":`)
-
-This block runs the interactive console application.
-
-1.  **Setup:** Loads environment variables (specifically `GEMINI_API_KEY`) and initializes the `ChatGoogleGenerativeAI` model (`gemini-1.5-flash`).
-2.  **Component Initialization:** Creates instances of the core components from the `src` package: `EmbeddingPipeline`, `VectorStore`, and `RAGRetriever`.
-3.  **Data Ingestion:**
-    * Checks if the vector store is already populated.
-    * If not, it loads all documents from the `data/text_files` directory.
-    * Uses the `EmbeddingPipeline` to process and embed the documents and adds them to the `VectorStore`.
-4.  **Interactive Console Loop:**
-    * Starts an infinite `while` loop, prompting the user for a question.
-    * Listens for special commands: `exit`/`quit` to terminate and `reset` to clear the conversation history.
-    * The user's query is passed to `enhance_query_with_ai`.
-    * The (potentially enhanced) query is then passed to `rag_advanced` along with the current conversation history.
-    * The new question and the start of the AI's answer are appended to the `conversation_history`. The history is trimmed to the last 10 exchanges.
-    * The results are displayed in a clean, formatted block.
-
 ### 4. How to Run the Project
 
 #### Prerequisites
 
 Ensure you have Python installed and the required packages from `requirements.txt` (listed below).
+
+You will also need to set up a GitHub Personal Access Token with `repo` scope and set it as an environment variable:
+
+```bash
+export GITHUB_API_TOKEN="your_github_token_here"
+```
 
 # Expected Output
 
@@ -94,6 +47,9 @@ Ask a question about your documents (or type 'exit'): What is the project about?
 
 💡 GIVA ANSWER:
 
+--- Snippet 3 (Source: data\README (2).md) ---
+💡 GIVA ANSWER:
+
 Based on the provided documents, this project is a Retrieval-Augmented Generation (RAG) system designed to answer questions from a local document knowledge base.
 
 Key features include:
@@ -111,6 +67,42 @@ Key features include:
 
 
 #### Installation
+        
+        
+## AI Agent Functionality
+
+The AI agent is designed to automatically update documentation based on code changes. When a functional change is detected in a pull request, the agent will:
+
+1.  **Analyze the Code Diff:** Understand the nature and impact of the code changes.
+2.  **Gatekeeping:** Determine if the change is functional and requires documentation updates. Trivial changes will be skipped.
+3.  **Retrieve Relevant Documentation:** Search the existing documentation for sections related to the code changes.
+4.  **Generate New Documentation:** Use an LLM to rewrite or add documentation based on the code analysis and existing context.
+5.  **Create GitHub Pull Request:** Automatically create a new branch, commit the updated documentation, and open a pull request against the main branch.
+
+### Agent Workflow
+
+The agent follows these steps:
+
+1.  **Initialization:** AI components (retriever, analyzer, rewriter) are initialized upon application start.
+2.  **Analysis:** The `run_agent_analysis` function takes the `git_diff`, `pr_title`, `repo_name`, and `pr_number` as input. It first analyzes the `git_diff` to understand the changes.
+3.  **Functional Check:** If the analysis indicates a functional change, the agent proceeds. Otherwise, it skips the process.
+4.  **Context Retrieval:** The agent queries the vector store using the analysis summary to find relevant existing documentation snippets.
+5.  **Documentation Rewriting:** The LLM is invoked to generate new documentation content based on the code diff and the retrieved context.
+6.  **File Identification:** The agent identifies the source files that need updating based on the metadata of the retrieved documents. It ensures paths are correctly formatted (e.g., adding `backend/` prefix and fixing slashes).
+7.  **Pull Request Creation:**
+    *   Authenticates with GitHub using the `GITHUB_API_TOKEN`.
+    *   Creates a new branch based on the default branch (e.g., `main`).
+    *   Updates the identified source files with the newly generated content on the new branch.
+    *   Opens a pull request with a title and body summarizing the AI-generated changes.
+8.  **Logging:** Throughout the process, logs are sent via a `broadcaster` to provide real-time feedback on the agent's progress, including analysis, retrieval, generation, and PR creation status. Errors are also logged.
+
+### Running the Agent (for Development/Testing)
+
+To test the agent logic directly, you can run the `agent_logic.py` file from the `backend` directory. Ensure your `GITHUB_API_TOKEN` is set in your environment.
 
 ```bash
-pip install langchain langchain_community langchain_core langchain_google_genai pypdf pymupdf chromadb faiss-cpu sentence-transformers python-dotenv 
+# From the 'backend' directory
+python agent_logic.py
+```
+
+*Note: The self-test section has been removed as the primary execution method is via `uvicorn`.*
