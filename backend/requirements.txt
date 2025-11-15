@@ -12,9 +12,11 @@ langchain-community
 
 # --- GitHub API ---
 PyGithub
+requests # <--- ADD THIS LINE
 
 # --- Utilities ---
 python-dotenv
+
 # --- Local Embeddings (Replaces Google for FAISS) ---
 sentence-transformers
 langchain-huggingface
