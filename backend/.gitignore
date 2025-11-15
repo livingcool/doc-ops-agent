@@ -14,3 +14,22 @@ env/
 # IDE files
 .idea/
 .vscode/
+
+# Node.js
+node_modules
+npm-debug.log
+
+# Python
+__pycache__
+.venv
+venv
+*.env
+
+# OS
+.DS_Store
+
+# Our App
+app_secret.key
+faiss_indexes
+temp_user_repos
+user_logs
