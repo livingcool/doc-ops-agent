@@ -1,0 +1,20 @@
+# --- Core Web Server ---
+fastapi
+uvicorn[standard]
+sse-starlette
+
+# --- AI & Vector DB ---
+faiss-cpu
+google-generativeai
+langchain
+langchain-google-genai
+langchain-community
+
+# --- GitHub API ---
+PyGithub
+
+# --- Utilities ---
+python-dotenv
+# --- Local Embeddings (Replaces Google for FAISS) ---
+sentence-transformers
+langchain-huggingface
