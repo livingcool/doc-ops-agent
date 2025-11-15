@@ -110,7 +110,7 @@ Key features include:
   ...
 
 
-#### Installation
+#### Instal
 
 ```bash
 pip install langchain langchain_community langchain_core langchain_google_genai pypdf pymupdf chromadb faiss-cpu sentence-transformers python-dotenv 
