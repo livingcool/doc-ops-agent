@@ -207,23 +207,20 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
             # Log the exception traceback for debugging
             logger.error(f"Agent failed for PR #{pr_number} ({repo_name}) with error: {e}", exc_info=True)
 
-        # --- Step 7: Create and write the detailed log entry ---
-        log_entry = f"""
-======================================================================
-AGENT RUN FOR PR #{pr_number}
-----------------------------------------------------------------------
-Repository:          {repo_name}
-Author:              @{user_name}
-Original PR Title:   '{pr_title}'
-AI Analysis:         {analysis_summary}
----
-Generated Documentation:
-{new_documentation}
----
-Result: {result_message}
-======================================================================
-"""
-        logger.info(log_entry)
+        # --- Step 7: Log the final result ---
+        if "Successfully" in result_message:
+            # On success, log the specific format you requested.
+            log_entry = (
+                f"This is an AI-generated documentation update for PR #{pr_number}, "
+                f"originally authored by @{user_name}.\n"
+                f"Original PR: '{pr_title}' AI Analysis: {analysis_summary}"
+            )
+            logger.info(log_entry)
+        else:
+            # On failure, log a simpler error message for clarity.
+            logger.error(
+                f"AGENT FAILED for PR #{pr_number} ({repo_name}). Reason: {result_message}"
+            )
 
     except Exception as e:
         logger.error(f"Agent failed for PR #{pr_number} ({repo_name}) with error: {e}", exc_info=True)
