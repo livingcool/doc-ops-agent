@@ -33,3 +33,6 @@ app_secret.key
 faiss_indexes
 temp_user_repos
 user_logs
+# Node.js
+frontend/node_modules
+backend/node_modules

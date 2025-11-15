@@ -1,7 +1,9 @@
 import json
 import os
 import shutil
-import git # We'll need the GitPython library
+import git
+import time # Import time for retries
+import stat # Import stat for file permissions
 from cryptography.fernet import Fernet
 from contextlib import contextmanager
 
@@ -11,12 +13,9 @@ LOGS_DIR = 'user_logs'
 REPO_CLONE_DIR = 'temp_user_repos'
 
 # --- Encryption ---
-# A simple key for this hackathon. In a real app, this would be
-# a very secure secret. We'll generate one.
 ENCRYPTION_KEY_FILE = 'app_secret.key'
 
 def get_encryption_key():
-    """Loads or generates a new encryption key."""
     if os.path.exists(ENCRYPTION_KEY_FILE):
         with open(ENCRYPTION_KEY_FILE, 'rb') as f:
             key = f.read()
@@ -29,34 +28,50 @@ def get_encryption_key():
 cipher_suite = Fernet(get_encryption_key())
 
 def encrypt_data(data: str) -> str:
-    """Encrypts a string."""
     return cipher_suite.encrypt(data.encode()).decode()
 
 def decrypt_data(encrypted_data: str) -> str:
-    """Decrypts a string."""
     return cipher_suite.decrypt(encrypted_data.encode()).decode()
 
-# --- User Management ---
+# --- NEW: Robust rmtree for Windows ---
+def force_rmtree(path, max_retries=5):
+    """
+    Robustly deletes a directory, handling Windows file lock errors.
+    """
+    for attempt in range(max_retries):
+        try:
+            # First, try to fix read-only attributes (common in .git)
+            for root, dirs, files in os.walk(path):
+                for fname in files:
+                    full_path = os.path.join(root, fname)
+                    os.chmod(full_path, stat.S_IWRITE)
+                for dname in dirs:
+                    full_path = os.path.join(root, dname)
+                    os.chmod(full_path, stat.S_IWRITE)
+            
+            shutil.rmtree(path)
+            print(f"Successfully cleaned up {path}")
+            return
+        except PermissionError as e:
+            print(f"Warning: PermissionError on attempt {attempt+1}/{max_retries}. Retrying in 1s... ({e})")
+            time.sleep(1)
+        except Exception as e:
+            print(f"Error deleting {path}: {e}")
+            break # Don't retry on other errors
+    print(f"FATAL: Could not delete directory {path} after {max_retries} attempts.")
 
+# --- User Management ---
 def get_all_users() -> dict:
-    """Loads the users.json file."""
-    if not os.path.exists(USERS_FILE):
-        return {}
+    if not os.path.exists(USERS_FILE): return {}
     try:
-        with open(USERS_FILE, 'r') as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        return {}
+        with open(USERS_FILE, 'r') as f: return json.load(f)
+    except json.JSONDecodeError: return {}
 
 def save_users(users_data: dict):
-    """Saves data back to users.json."""
     with open(USERS_FILE, 'w') as f:
         json.dump(users_data, f, indent=2)
 
 def get_user_id_by_repo(repo_full_name: str) -> str | None:
-    """Finds a user_id (their repo name) from the full repo name."""
-    # The webhook sends 'livingcool/doc-ops-agent'
-    # We just want to find a user who registered that repo
     users = get_all_users()
     for user_id, data in users.items():
         if data.get('repo_full_name') == repo_full_name:
@@ -64,13 +79,8 @@ def get_user_id_by_repo(repo_full_name: str) -> str | None:
     return None
 
 def get_user_credentials(user_id: str) -> dict | None:
-    """Gets and decrypts a specific user's credentials."""
-    users = get_all_users()
-    user_data = users.get(user_id)
-    
-    if not user_data:
-        return None
-        
+    user_data = get_all_users().get(user_id)
+    if not user_data: return None
     try:
         return {
             "user_id": user_id,
@@ -84,12 +94,7 @@ def get_user_credentials(user_id: str) -> dict | None:
         return None
 
 def create_user(repo_full_name: str, github_token: str, gemini_key: str, model_name: str) -> str:
-    """
-    Adds a new user to the database and returns their ID.
-    The user_id will just be the repo_full_name (e.g., 'livingcool_doc-ops-agent')
-    """
-    user_id = repo_full_name.replace('/', '_') # 'livingcool/doc-ops-agent' -> 'livingcool_doc-ops-agent'
-    
+    user_id = repo_full_name.replace('/', '_')
     users = get_all_users()
     users[user_id] = {
         "repo_full_name": repo_full_name,
@@ -100,40 +105,36 @@ def create_user(repo_full_name: str, github_token: str, gemini_key: str, model_n
     save_users(users)
     return user_id
 
-# --- NEW: User-Specific Logging ---
-
+# --- UPDATED: User-Specific Logging ---
 @contextmanager
 def user_logger(user_id: str):
-    """
-    A context manager to safely open and append to a user's log file.
-    This also pushes to the *live dashboard* queue.
-    """
     log_file_path = os.path.join(LOGS_DIR, f"{user_id}.log")
     
-    # We still need a way to push to the live dashboard
-    # We'll import main.py's queue for this.
     try:
         from main import push_to_global_queue
     except ImportError:
-        # This allows the file to be imported without circular dependency
-        print("Could not import global log queue. Live dashboard will not update.")
         push_to_global_queue = None
 
     def log_and_push(event: str, data: str):
         log_message = f"[{event.upper()}] {data}\n"
         
-        # 1. Write to the user's private log file
         try:
             with open(log_file_path, 'a', encoding='utf-8') as f:
                 f.write(log_message)
         except Exception as e:
             print(f"Failed to write to log file {log_file_path}: {e}")
             
-        # 2. Push to the live dashboard (if available)
+        # --- FIX for 'coroutine was never awaited' ---
         if push_to_global_queue:
-            # We don't await this, just fire-and-forget
             import asyncio
-            asyncio.create_task(push_to_global_queue(event, data))
+            try:
+                # Try to get the running loop
+                loop = asyncio.get_running_loop()
+                loop.create_task(push_to_global_queue(event, data))
+            except RuntimeError:
+                # If no loop (e.g., in a thread), run in a new one
+                asyncio.run(push_to_global_queue(event, data))
+        # --- END OF FIX ---
 
     try:
         yield log_and_push
@@ -141,19 +142,14 @@ def user_logger(user_id: str):
         log_and_push("log-error", f"An uncaught error occurred: {e}")
         raise e
 
-# --- NEW: Onboarding Logic (Cloning and Indexing) ---
+# --- UPDATED: Onboarding Logic ---
 @contextmanager
 def clone_repo(repo_full_name: str, github_token: str) -> str | None:
-    """
-    Clones a user's repo into a temp folder and yields the path.
-    Deletes the folder on exit.
-    """
     repo_url = f"https://{github_token}@github.com/{repo_full_name}.git"
     clone_path = os.path.join(REPO_CLONE_DIR, repo_full_name.replace('/', '_'))
     
-    # Clean up old clone if it exists
     if os.path.exists(clone_path):
-        shutil.rmtree(clone_path)
+        force_rmtree(clone_path) # Use our new robust delete
         
     try:
         print(f"Cloning repo {repo_full_name} to {clone_path}...")
@@ -165,5 +161,4 @@ def clone_repo(repo_full_name: str, github_token: str) -> str | None:
     finally:
         # Clean up the repo
         if os.path.exists(clone_path):
-            shutil.rmtree(clone_path)
-            print(f"Cleaned up {clone_path}.")
+            force_rmtree(clone_path) # Use our new robust delete

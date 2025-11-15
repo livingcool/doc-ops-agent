@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.venv
+venv/
+env/
+
+# Node
+frontend/node_modules
+backend/node_modules
+
+# OS
+.DS_Store
+
+# Secrets
+*.env
+app_secret.key
+
+# Our App's Temp Folders
+faiss_indexes/
+user_logs/
+temp_user_repos/
