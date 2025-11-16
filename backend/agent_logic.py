@@ -194,7 +194,7 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
                 "git_diff": git_diff
             })
             # For creation, the source file is always the main knowledge base
-            source_files = [os.path.join('data', 'Knowledge_Base.md')]
+            raw_paths = [os.path.join('data', 'Knowledge_Base.md')]
         else:
             # --- UPDATE MODE ---
             if confidence_score < 0.5: # Gatekeeping based on confidence
@@ -210,7 +210,6 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
             })
             # Get source files from the retrieved docs
             raw_paths = list(set([doc.metadata.get('source') for doc in retrieved_docs]))
-            source_files = [path.replace("\\", "/") for path in raw_paths]
         
         await broadcaster("log-step", "✅ New documentation generated.")
         
@@ -226,6 +225,10 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
 
         # --- Step 7: Package the results for the PR ---
         
+        # --- THIS IS THE FIX: Standardize path formatting for both modes ---
+        # This ensures `source_files` is always a clean list of strings.
+        source_files = [path.replace("\\", "/") for path in raw_paths]
+
         pr_data = {
             "new_content": new_documentation,
             "source_files": source_files,

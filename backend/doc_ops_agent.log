@@ -342,3 +342,7 @@ ValueError: too many values to unpack (expected 2)
 Traceback (most recent call last):
   File "E:\2025\AI Learnings\GenAI Buildathon Sprint by Product Space\doc-ops-agent\backend\agent_logic.py", line 141, in run_agent_analysis
 ValueError: too many values to unpack (expected 2)
+2025-11-16 11:25:54,958 - Agent failed for PR #b949858 (livingcool/doc-ops-agent) with error: too many values to unpack (expected 2)
+Traceback (most recent call last):
+  File "E:\2025\AI Learnings\GenAI Buildathon Sprint by Product Space\doc-ops-agent\backend\agent_logic.py", line 141, in run_agent_analysis
+ValueError: too many values to unpack (expected 2)
