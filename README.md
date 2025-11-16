@@ -187,6 +187,26 @@ Your setup is complete! Now you can test the agent's workflow.
 5.  **Check for the New PR**: After a minute or two, a new pull request, created by the agent, will appear in your repository. This PR will contain the AI-generated documentation updates.
 6.  **Check the Logs**: The `backend/doc_ops_agent.log` file will contain a detailed history of the agent's runs.
 
+## 🧐 Common Mistakes & Troubleshooting
+
+If the agent doesn't behave as expected, check for these common issues:
+
+*   **Gemini API Rate Limits Exceeded**:
+    *   **Symptom**: The logs show a `ResourceExhausted: 429` error. This is common on the free tier of the Gemini API, which has a low request-per-minute limit.
+    *   **Solution**: Wait a minute for the quota to reset. If this happens frequently, consider upgrading to a paid Google AI plan or adding more robust error handling with exponential backoff in `llm_clients.py`.
+
+*   **GitHub API 409 Conflict Error**:
+    *   **Symptom**: The logs show an error like `Failed to update file ... does not match ...: 409`.
+    *   **Cause**: This happens when the agent tries to update a file that has been changed since the agent started its process. It's a race condition, often caused by multiple agent runs triggering in quick succession on the same file.
+    *   **Solution**: Ensure the agent isn't being triggered multiple times for the same event. The logic to ignore pushes to `ai-docs-fix-*` branches helps, but if you merge PRs very quickly, this can still occur.
+
+*   **Webhook Not Triggering**:
+    *   **Symptom**: You merge a PR, but nothing happens in the frontend feed or backend logs.
+    *   **Solution**:
+        1.  Check that your `ngrok` tunnel is still active and running.
+        2.  In your GitHub repo's Webhook settings, go to "Recent Deliveries". Check if the latest event has a green checkmark. If it's a red "X", inspect the response body to see the error message returned from your local server.
+        3.  Ensure the Payload URL is correct and that the webhook is subscribed to the right events (`Pull requests`).
+
 ---
 
 You are now ready to use the Doc-Ops Agent like a pro! If you encounter any issues, check the terminal output for errors in the backend, frontend, and ngrok consoles.
