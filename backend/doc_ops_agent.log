@@ -336,3 +336,4 @@ Traceback (most recent call last):
 ValueError: too many values to unpack (expected 2)
 2025-11-16 11:00:53,817 - No relevant docs were retrieved using the relevance score threshold 0.3
 2025-11-16 11:04:00,895 - No relevant docs were retrieved using the relevance score threshold 0.3
+2025-11-16 11:13:02,373 - No relevant docs were retrieved using the relevance score threshold 0.3

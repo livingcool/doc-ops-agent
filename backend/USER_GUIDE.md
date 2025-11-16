@@ -172,8 +172,8 @@ Now, you need to tell GitHub where to send events. This should be done on the re
 5.  **Secret**: Paste the same secret you used for `GITHUB_SECRET_TOKEN` in your `.env` file.
 6.  **Which events would you like to trigger this webhook?**:
     *   Select **Let me select individual events.**
-    *   Uncheck `Pushes`.
-    *   Check `Pull requests`.
+    *   Check `Pushes`.
+    *   Check `Pull requests`. (The agent will trigger on merge).
 7.  Ensure **Active** is checked and click **Add webhook**.
 
 ## 8. How to Use the Agent
