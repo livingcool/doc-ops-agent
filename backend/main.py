@@ -78,7 +78,10 @@ async def handle_github_webhook(
     raw_body = await request.body()
     
     if content_type != "application/json":
-        raise HTTPException(status_code=415, detail="Unsupported Media Type: Expected application/json")
+        error_detail = (
+            f"Unsupported Media Type: '{content_type}'. Please configure your GitHub webhook to use 'application/json'."
+        )
+        raise HTTPException(status_code=415, detail=error_detail)
 
     if not GITHUB_SECRET_TOKEN:
         print("ERROR: GITHUB_SECRET_TOKEN is not configured on the server.")
