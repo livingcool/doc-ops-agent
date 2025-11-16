@@ -353,3 +353,918 @@ ValueError: too many values to unpack (expected 2)
 2025-11-16 11:47:18,054 - Failed to update file agent_logic.py: 404 {"message": "Not Found", "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content", "status": "404"}. Skipping...
 2025-11-16 11:47:18,054 - No files were successfully updated, skipping PR creation.
 2025-11-16 11:47:18,057 - AGENT FAILED for PR #070ef5e (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 11:50:12,573 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:50:22,561 - Successfully updated file: backend/agent_logic.py
+2025-11-16 11:50:24,269 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:50:26,592 - This is an AI-generated documentation update for PR #1137d3f, originally authored by @livingcool.
+Original PR: 'Push to main: changed the path' AI Analysis: Functional change: Updated agent logic to standardize path formatting, ensure paths are relative to the repo root, and made the confidence threshold for documentation updates configurable. Also updated documentation to reflect these changes and added new AI-generated documentation snippets.
+2025-11-16 11:50:33,504 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:50:38,070 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:50:43,738 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:50:45,884 - This is an AI-generated documentation update for PR #47c0284, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-1137d3f: docs: AI-generated updates for PR #1137d3f' AI Analysis: Functional change: Modified the agent logic to use a configurable confidence threshold for documentation updates and updated the USER_GUIDE.md with minor text corrections.
+2025-11-16 11:50:48,610 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:50:50,677 - This is an AI-generated documentation update for PR #2cd7c27, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-1137d3f: docs: AI-generated updates for PR #1137d3f' AI Analysis: Functional change: Modified the logic for updating documentation, specifically by introducing a configurable confidence threshold for retrieving relevant documentation snippets and refining the process of creating or updating documentation based on AI analysis.
+2025-11-16 11:50:55,263 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:50:57,679 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:51:00,579 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:51:03,337 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 11:51:05,103 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 11:51:05,103 - No files were successfully updated, skipping PR creation.
+2025-11-16 11:51:05,118 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 11:51:06,360 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:51:07,800 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:51:08,203 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 11:51:09,868 - This is an AI-generated documentation update for PR #b88f696, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-47c0284: docs: AI-generated updates for PR #47c0284' AI Analysis: The diff modifies the documentation in `Knowledge_Base.md` and `agent_logic.py` to clarify the agent's functionality, specifically detailing the 'Update Mode' and 'Create Mode' logic, and introduces a configurable `CONFIDENCE_THRESHOLD` for documentation updates.
+2025-11-16 11:51:09,915 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 11:51:09,915 - No files were successfully updated, skipping PR creation.
+2025-11-16 11:51:09,917 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 11:51:18,326 - Successfully updated file: backend/agent_logic.py
+2025-11-16 11:51:20,352 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:51:20,668 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:51:22,593 - This is an AI-generated documentation update for PR #46487fa, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-2cd7c27: docs: AI-generated updates for PR #2cd7c27' AI Analysis: Functional change: Updated the main documentation file (Knowledge_Base.md) to reflect the current state of the project's architecture and components, and made the confidence threshold for documentation updates configurable.
+2025-11-16 11:51:29,853 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 11:51:30,223 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:51:31,502 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 11:51:31,502 - No files were successfully updated, skipping PR creation.
+2025-11-16 11:51:31,505 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 11:51:33,026 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:51:39,856 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:51:42,188 - This is an AI-generated documentation update for PR #0264040, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-46487fa: docs: AI-generated updates for PR #46487fa' AI Analysis: Functional change: Updated the documentation generation logic to make the confidence threshold configurable and added a new section to the Knowledge Base explaining the project's technologies and workflow.
+2025-11-16 11:51:44,004 - Successfully updated file: backend/llm_clients.py
+2025-11-16 11:51:45,981 - Successfully updated file: backend/agent_logic.py
+2025-11-16 11:51:47,968 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:51:48,742 - Retrying langchain_google_genai.chat_models._achat_with_retry.<locals>._achat_with_retry in 2.0 seconds as it raised ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-2.5-flash-lite
+Please retry in 10.722271169s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 15
+}
+, retry_delay {
+  seconds: 10
+}
+].
+2025-11-16 11:51:49,035 - Retrying langchain_google_genai.chat_models._achat_with_retry.<locals>._achat_with_retry in 2.0 seconds as it raised ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-2.5-flash-lite
+Please retry in 10.429675463s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 15
+}
+, retry_delay {
+  seconds: 10
+}
+].
+2025-11-16 11:51:50,116 - This is an AI-generated documentation update for PR #4a824f8, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-46487fa: docs: AI-generated updates for PR #46487fa' AI Analysis: Functional change: The diff updates the documentation for the project, explaining its purpose, core technologies, and how its components work together. It also includes changes to the agent logic for updating and creating documentation, and the vector store for managing knowledge.
+2025-11-16 11:51:50,569 - Retrying langchain_google_genai.chat_models._achat_with_retry.<locals>._achat_with_retry in 2.0 seconds as it raised ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-2.5-flash-lite
+Please retry in 8.904296218s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 15
+}
+, retry_delay {
+  seconds: 8
+}
+].
+2025-11-16 11:51:51,220 - Agent failed for PR #b6e0c08 (livingcool/doc-ops-agent) with error: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-2.5-flash-lite
+Please retry in 8.246299483s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 15
+}
+, retry_delay {
+  seconds: 8
+}
+]
+Traceback (most recent call last):
+  File "E:\2025\AI Learnings\GenAI Buildathon Sprint by Product Space\doc-ops-agent\backend\agent_logic.py", line 160, in run_agent_analysis
+    analysis = await analyzer_chain.ainvoke({"git_diff": git_diff})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\runnables\base.py", line 3291, in ainvoke
+    input_ = await coro_with_context(part(), context, create_task=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 417, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1036, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 994, in agenerate
+    raise exceptions[0]
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1164, in _agenerate_with_cache
+    result = await self._agenerate(
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 1010, in _agenerate
+    response: GenerateContentResponse = await _achat_with_retry(
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 229, in _achat_with_retry
+    return await _achat_with_retry(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\__init__.py", line 420, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\__init__.py", line 187, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 227, in _achat_with_retry
+    raise e
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 220, in _achat_with_retry
+    return await generation_method(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\async_client.py", line 440, in generate_content
+    response = await rpc(
+               ^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 231, in retry_wrapped_func
+    return await retry_target(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 163, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 158, in retry_target
+    return await target()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 89, in __await__
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-2.5-flash-lite
+Please retry in 8.246299483s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 15
+}
+, retry_delay {
+  seconds: 8
+}
+]
+2025-11-16 11:51:51,450 - Agent failed for PR #fd99b01 (livingcool/doc-ops-agent) with error: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-2.5-flash-lite
+Please retry in 8.01221185s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 15
+}
+, retry_delay {
+  seconds: 8
+}
+]
+Traceback (most recent call last):
+  File "E:\2025\AI Learnings\GenAI Buildathon Sprint by Product Space\doc-ops-agent\backend\agent_logic.py", line 208, in run_agent_analysis
+    new_documentation = await rewriter_chain.ainvoke({
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\runnables\base.py", line 3291, in ainvoke
+    input_ = await coro_with_context(part(), context, create_task=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 417, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1036, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 994, in agenerate
+    raise exceptions[0]
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1164, in _agenerate_with_cache
+    result = await self._agenerate(
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 1010, in _agenerate
+    response: GenerateContentResponse = await _achat_with_retry(
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 229, in _achat_with_retry
+    return await _achat_with_retry(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\__init__.py", line 420, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\__init__.py", line 187, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 227, in _achat_with_retry
+    raise e
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 220, in _achat_with_retry
+    return await generation_method(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\async_client.py", line 440, in generate_content
+    response = await rpc(
+               ^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 231, in retry_wrapped_func
+    return await retry_target(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 163, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 158, in retry_target
+    return await target()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 89, in __await__
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-2.5-flash-lite
+Please retry in 8.01221185s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 15
+}
+, retry_delay {
+  seconds: 8
+}
+]
+2025-11-16 11:51:52,906 - Agent failed for PR #444e767 (livingcool/doc-ops-agent) with error: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-2.5-flash-lite
+Please retry in 6.557769633s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 15
+}
+, retry_delay {
+  seconds: 6
+}
+]
+Traceback (most recent call last):
+  File "E:\2025\AI Learnings\GenAI Buildathon Sprint by Product Space\doc-ops-agent\backend\agent_logic.py", line 160, in run_agent_analysis
+    analysis = await analyzer_chain.ainvoke({"git_diff": git_diff})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\runnables\base.py", line 3291, in ainvoke
+    input_ = await coro_with_context(part(), context, create_task=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 417, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1036, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 994, in agenerate
+    raise exceptions[0]
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1164, in _agenerate_with_cache
+    result = await self._agenerate(
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 1010, in _agenerate
+    response: GenerateContentResponse = await _achat_with_retry(
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 229, in _achat_with_retry
+    return await _achat_with_retry(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\__init__.py", line 420, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\__init__.py", line 187, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 227, in _achat_with_retry
+    raise e
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 220, in _achat_with_retry
+    return await generation_method(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\async_client.py", line 440, in generate_content
+    response = await rpc(
+               ^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 231, in retry_wrapped_func
+    return await retry_target(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 163, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 158, in retry_target
+    return await target()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 89, in __await__
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-2.5-flash-lite
+Please retry in 6.557769633s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 15
+}
+, retry_delay {
+  seconds: 6
+}
+]
+2025-11-16 11:52:11,858 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:52:22,989 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:52:24,478 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 11:52:27,286 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 11:52:27,296 - No files were successfully updated, skipping PR creation.
+2025-11-16 11:52:27,298 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 11:52:43,443 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 11:52:48,037 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 11:52:48,037 - No files were successfully updated, skipping PR creation.
+2025-11-16 11:52:48,039 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 11:53:16,427 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:53:42,697 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:53:44,908 - This is an AI-generated documentation update for PR #0fcab6a, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-b88f696: docs: AI-generated updates for PR #b88f696' AI Analysis: Functional change: Updated documentation and code to make the confidence threshold for documentation updates configurable via an environment variable and clarified the agent's workflow and technologies used.
+2025-11-16 11:53:49,187 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:53:56,661 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:54:21,855 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 11:54:26,563 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 11:54:26,563 - No files were successfully updated, skipping PR creation.
+2025-11-16 11:54:27,178 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 11:54:30,485 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:54:32,572 - This is an AI-generated documentation update for PR #68e2e7f, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-0264040: docs: AI-generated updates for PR #0264040' AI Analysis: Functional change: Made the confidence threshold for documentation updates configurable via an environment variable and updated the documentation to reflect this change.
+2025-11-16 11:55:34,921 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:55:58,377 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:56:01,009 - This is an AI-generated documentation update for PR #64be1f6, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-0fcab6a: docs: AI-generated updates for PR #0fcab6a' AI Analysis: Functional change: Updated the confidence threshold for documentation updates to be configurable via an environment variable 'CONFIDENCE_THRESHOLD' and made the default value explicit.
+2025-11-16 11:56:16,165 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:56:25,607 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:56:27,750 - This is an AI-generated documentation update for PR #54fc03c, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-64be1f6: docs: AI-generated updates for PR #64be1f6' AI Analysis: Introduced a configurable confidence threshold for documentation updates via the CONFIDENCE_THRESHOLD environment variable.
+2025-11-16 11:56:28,046 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:56:33,398 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:56:34,538 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:56:43,632 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 11:56:45,096 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 11:56:45,097 - No files were successfully updated, skipping PR creation.
+2025-11-16 11:56:45,104 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 11:56:46,001 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:56:48,281 - This is an AI-generated documentation update for PR #ae27d24, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-54fc03c: docs: AI-generated updates for PR #54fc03c' AI Analysis: Functional change: Introduced a configurable `CONFIDENCE_THRESHOLD` environment variable to control the minimum confidence score for documentation updates, defaulting to 0.2.
+2025-11-16 11:56:50,812 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:56:53,390 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:56:54,133 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:56:56,489 - This is an AI-generated documentation update for PR #770c8f2, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-68e2e7f: docs: AI-generated updates for PR #68e2e7f' AI Analysis: Functional change: Updated documentation to clarify the confidence threshold for updating documentation and made the threshold configurable via an environment variable.
+2025-11-16 11:56:59,794 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 11:57:01,457 - Successfully updated file: backend/llm_clients.py
+2025-11-16 11:57:02,863 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 11:57:04,758 - Error creating GitHub PR: Validation Failed: 422 {"message": "Validation Failed", "errors": [{"resource": "PullRequest", "code": "custom", "message": "A pull request already exists for livingcool:ai-docs-fix-pr-1137d3f."}], "documentation_url": "https://docs.github.com/rest/pulls/pulls#create-a-pull-request", "status": "422"}
+Traceback (most recent call last):
+  File "E:\2025\AI Learnings\GenAI Buildathon Sprint by Product Space\doc-ops-agent\backend\agent_logic.py", line 91, in _create_github_pr_sync
+    pr = repo.create_pull(
+         ^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\github\Repository.py", line 1858, in create_pull
+    headers, data = self._requester.requestJsonAndCheck("POST", f"{self.url}/pulls", input=post_parameters)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\github\Requester.py", line 623, in requestJsonAndCheck
+    return self.__check(
+           ^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\github\Requester.py", line 853, in __check
+    raise self.createException(status, responseHeaders, data)
+github.GithubException.GithubException: Validation Failed: 422 {"message": "Validation Failed", "errors": [{"resource": "PullRequest", "code": "custom", "message": "A pull request already exists for livingcool:ai-docs-fix-pr-1137d3f."}], "documentation_url": "https://docs.github.com/rest/pulls/pulls#create-a-pull-request", "status": "422"}
+2025-11-16 11:57:04,789 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:57:05,151 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: Validation Failed: 422 {"message": "Validation Failed", "errors": [{"resource": "PullRequest", "code": "custom", "message": "A pull request already exists for livingcool:ai-docs-fix-pr-1137d3f."}], "documentation_url": "https://docs.github.com/rest/pulls/pulls#create-a-pull-request", "status": "422"}
+2025-11-16 11:57:07,585 - This is an AI-generated documentation update for PR #45e8f18, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-ae27d24: docs: AI-generated updates for PR #ae27d24' AI Analysis: Functional change: Introduced a configurable `CONFIDENCE_THRESHOLD` environment variable to control the minimum confidence score required for documentation updates, defaulting to 0.2.
+2025-11-16 11:57:11,138 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:57:13,259 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:57:13,837 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:57:20,352 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:57:21,664 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 11:57:22,519 - This is an AI-generated documentation update for PR #d78ae07, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-1137d3f: docs: AI-generated updates for PR #1137d3f' AI Analysis: Functional change: Introduced a configurable CONFIDENCE_THRESHOLD environment variable (defaulting to 0.2) to control the minimum confidence score for documentation updates, and added logic to gatekeep documentation updates based on this threshold.
+2025-11-16 11:57:22,675 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:57:23,150 - Failed to update file backend/agent_logic.py: backend/agent_logic.py does not match 6e327af757cf234e34cdf31bd5dfbb380811850d: 409 {"message": "backend/agent_logic.py does not match 6e327af757cf234e34cdf31bd5dfbb380811850d", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 11:57:24,648 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 11:57:24,648 - No files were successfully updated, skipping PR creation.
+2025-11-16 11:57:24,843 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 11:57:24,942 - This is an AI-generated documentation update for PR #d6d257d, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-45e8f18: docs: AI-generated updates for PR #45e8f18' AI Analysis: Functional change: Introduced a configurable `CONFIDENCE_THRESHOLD` environment variable to control the minimum confidence score for documentation updates, defaulting to 0.2.
+2025-11-16 11:57:26,764 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:57:28,369 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:57:29,756 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:57:29,998 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:57:34,540 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 11:57:35,970 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 11:57:35,972 - No files were successfully updated, skipping PR creation.
+2025-11-16 11:57:35,986 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 11:57:36,135 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:57:39,444 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 11:57:39,737 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:57:40,894 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 11:57:40,894 - No files were successfully updated, skipping PR creation.
+2025-11-16 11:57:41,601 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 11:57:41,886 - This is an AI-generated documentation update for PR #9f1d7d1, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-d78ae07: docs: AI-generated updates for PR #d78ae07' AI Analysis: Introduced a new configurable environment variable `CONFIDENCE_THRESHOLD` to control the minimum confidence score for documentation updates, defaulting to 0.2. This change also updates the documentation to reflect this new configuration option and refactors the code to use this variable.
+2025-11-16 11:57:42,117 - Retrying langchain_google_genai.chat_models._achat_with_retry.<locals>._achat_with_retry in 2.0 seconds as it raised ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-2.5-flash-lite
+Please retry in 17.365839516s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 15
+}
+, retry_delay {
+  seconds: 17
+}
+].
+2025-11-16 11:57:45,211 - Agent failed for PR #10091d3 (livingcool/doc-ops-agent) with error: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-2.5-flash-lite
+Please retry in 14.271486874s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 15
+}
+, retry_delay {
+  seconds: 14
+}
+]
+Traceback (most recent call last):
+  File "E:\2025\AI Learnings\GenAI Buildathon Sprint by Product Space\doc-ops-agent\backend\agent_logic.py", line 160, in run_agent_analysis
+    analysis = await analyzer_chain.ainvoke({"git_diff": git_diff})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\runnables\base.py", line 3291, in ainvoke
+    input_ = await coro_with_context(part(), context, create_task=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 417, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1036, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 994, in agenerate
+    raise exceptions[0]
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1164, in _agenerate_with_cache
+    result = await self._agenerate(
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 1010, in _agenerate
+    response: GenerateContentResponse = await _achat_with_retry(
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 229, in _achat_with_retry
+    return await _achat_with_retry(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\__init__.py", line 420, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\__init__.py", line 187, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 227, in _achat_with_retry
+    raise e
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 220, in _achat_with_retry
+    return await generation_method(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\async_client.py", line 440, in generate_content
+    response = await rpc(
+               ^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 231, in retry_wrapped_func
+    return await retry_target(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 163, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 158, in retry_target
+    return await target()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 89, in __await__
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-2.5-flash-lite
+Please retry in 14.271486874s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 15
+}
+, retry_delay {
+  seconds: 14
+}
+]
+2025-11-16 11:58:56,540 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:59:37,085 - Successfully updated file: backend/vector_store.py
+2025-11-16 11:59:40,993 - Successfully updated file: backend/agent_logic.py
+2025-11-16 11:59:46,569 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 11:59:51,281 - This is an AI-generated documentation update for PR #c6d1b5e, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-770c8f2: docs: AI-generated updates for PR #770c8f2' AI Analysis: Updated the documentation to include a configurable confidence threshold for updating existing documentation and added a note about vector store re-indexing.
+2025-11-16 11:59:53,642 - Retrying langchain_google_genai.chat_models._achat_with_retry.<locals>._achat_with_retry in 2.0 seconds as it raised ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 250000, model: gemini-2.5-flash-lite
+Please retry in 5.82115327s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_input_token_count"
+  quota_id: "GenerateContentInputTokensPerModelPerMinute-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 250000
+}
+, retry_delay {
+  seconds: 5
+}
+].
+2025-11-16 11:59:55,342 - Retrying langchain_google_genai.chat_models._achat_with_retry.<locals>._achat_with_retry in 2.0 seconds as it raised ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 250000, model: gemini-2.5-flash-lite
+Please retry in 4.130620464s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_input_token_count"
+  quota_id: "GenerateContentInputTokensPerModelPerMinute-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 250000
+}
+, retry_delay {
+  seconds: 4
+}
+].
+2025-11-16 11:59:57,803 - Agent failed for PR #c888787 (livingcool/doc-ops-agent) with error: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 250000, model: gemini-2.5-flash-lite
+Please retry in 1.682188015s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_input_token_count"
+  quota_id: "GenerateContentInputTokensPerModelPerMinute-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 250000
+}
+, retry_delay {
+  seconds: 1
+}
+]
+Traceback (most recent call last):
+  File "E:\2025\AI Learnings\GenAI Buildathon Sprint by Product Space\doc-ops-agent\backend\agent_logic.py", line 160, in run_agent_analysis
+    analysis = await analyzer_chain.ainvoke({"git_diff": git_diff})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\runnables\base.py", line 3291, in ainvoke
+    input_ = await coro_with_context(part(), context, create_task=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 417, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1036, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 994, in agenerate
+    raise exceptions[0]
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1164, in _agenerate_with_cache
+    result = await self._agenerate(
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 1010, in _agenerate
+    response: GenerateContentResponse = await _achat_with_retry(
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 229, in _achat_with_retry
+    return await _achat_with_retry(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\__init__.py", line 420, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\__init__.py", line 187, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\tenacity\asyncio\__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 227, in _achat_with_retry
+    raise e
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_google_genai\chat_models.py", line 220, in _achat_with_retry
+    return await generation_method(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\async_client.py", line 440, in generate_content
+    response = await rpc(
+               ^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 231, in retry_wrapped_func
+    return await retry_target(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 163, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\retry\retry_unary_async.py", line 158, in retry_target
+    return await target()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 89, in __await__
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 250000, model: gemini-2.5-flash-lite
+Please retry in 1.682188015s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_input_token_count"
+  quota_id: "GenerateContentInputTokensPerModelPerMinute-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-flash-lite"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 250000
+}
+, retry_delay {
+  seconds: 1
+}
+]
+2025-11-16 12:00:05,133 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 12:00:07,273 - This is an AI-generated documentation update for PR #5485f33, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-d6d257d: docs: AI-generated updates for PR #d6d257d' AI Analysis: Functional change: Introduced a configurable CONFIDENCE_THRESHOLD environment variable to control the minimum confidence score required for documentation updates, defaulting to 0.2.
+2025-11-16 12:00:13,710 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 12:00:23,666 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 12:00:25,791 - This is an AI-generated documentation update for PR #b76b050, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-5485f33: docs: AI-generated updates for PR #5485f33' AI Analysis: Functional change: Introduced a configurable `CONFIDENCE_THRESHOLD` environment variable to control the minimum confidence score required for documentation updates, defaulting to 0.2.
+2025-11-16 12:00:30,034 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 12:00:30,856 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 12:00:37,016 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 12:00:38,533 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 12:00:38,533 - No files were successfully updated, skipping PR creation.
+2025-11-16 12:00:38,535 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 12:00:40,399 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 12:00:42,419 - This is an AI-generated documentation update for PR #2b0e6e0, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-b76b050: docs: AI-generated updates for PR #b76b050' AI Analysis: Functional change: Introduced a configurable `CONFIDENCE_THRESHOLD` environment variable to control the minimum confidence score required for documentation updates, defaulting to 0.2.
+2025-11-16 12:00:46,522 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 12:00:47,332 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 12:00:53,991 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 12:00:55,989 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 12:00:55,990 - No files were successfully updated, skipping PR creation.
+2025-11-16 12:00:55,991 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 12:00:56,872 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 12:00:59,174 - This is an AI-generated documentation update for PR #82d362f, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-2b0e6e0: docs: AI-generated updates for PR #2b0e6e0' AI Analysis: Functional change: Introduced a configurable `CONFIDENCE_THRESHOLD` environment variable to control the minimum confidence score required for documentation updates, defaulting to 0.2.
+2025-11-16 12:01:03,361 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 12:01:04,412 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 12:01:11,054 - Branch 'ai-docs-fix-pr-1137d3f' already exists. Proceeding...
+2025-11-16 12:01:12,494 - Failed to update file backend/data/Knowledge_Base.md: backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55: 409 {"message": "backend/data/Knowledge_Base.md does not match 36e9b76bebcccefb2bfd0099d8b5bcb5a81ebb55", "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents", "status": "409"}. Skipping...
+2025-11-16 12:01:12,494 - No files were successfully updated, skipping PR creation.
+2025-11-16 12:01:12,496 - AGENT FAILED for PR #1137d3f (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
+2025-11-16 12:01:14,088 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 12:01:16,635 - This is an AI-generated documentation update for PR #8bfece4, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-82d362f: docs: AI-generated updates for PR #82d362f' AI Analysis: Functional change: Introduced a configurable `CONFIDENCE_THRESHOLD` environment variable to control the minimum confidence score required for documentation updates, defaulting to 0.2.
+2025-11-16 12:01:30,762 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 12:01:47,065 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 12:01:51,786 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 12:01:53,672 - This is an AI-generated documentation update for PR #8edb5df, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-c6d1b5e: docs: AI-generated updates for PR #c6d1b5e' AI Analysis: This diff updates the documentation for the project, clarifying the role of the 'CONFIDENCE_THRESHOLD' in the agent's update mode and adding a new section detailing the project's core technologies and how its components work together.
+2025-11-16 12:02:08,812 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 12:02:10,612 - This is an AI-generated documentation update for PR #2ac47bc, originally authored by @livingcool.
+Original PR: 'Push to ai-docs-fix-pr-c6d1b5e: docs: AI-generated updates for PR #c6d1b5e' AI Analysis: The changes involve updating the documentation for the AI agent, including adding a new section on core technologies and clarifying how components work together. This is a functional change as it directly impacts the project's documentation.
