@@ -1,5 +1,6 @@
 import os
 import asyncio
+import datetime
 import logging
 from github import Github
 from langchain_core.documents import Document
@@ -10,7 +11,7 @@ from llm_clients import (
     get_rewriter_chain, 
     format_docs_for_context
 )
-from vector_store import get_retriever
+from vector_store import get_retriever, create_vector_store
 
 # --- Load GitHub Token ---
 GITHUB_API_TOKEN = os.getenv("GITHUB_API_TOKEN")
@@ -110,6 +111,37 @@ async def create_github_pr_async(*args, **kwargs):
     pr_url = await asyncio.to_thread(_create_github_pr_sync, *args, **kwargs)
     return pr_url
 
+# --- NEW: Knowledge Base Update Logic ---
+async def update_knowledge_base(logger, broadcaster, new_documentation: str):
+    """Appends the newly generated documentation to the central knowledge base."""
+    knowledge_base_path = os.path.join(os.path.dirname(__file__), 'data', '@Knowledge_base.md')
+    
+    try:
+        await broadcaster("log-step", "Updating central knowledge base...")
+        
+        # Create a formatted entry with a timestamp
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        update_entry = (
+            f"\n\n---\n\n"
+            f"### AI-Generated Update ({timestamp})\n\n"
+            f"{new_documentation}\n"
+        )
+        
+        # Append to the file asynchronously
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, lambda: 
+            _append_to_file_sync(knowledge_base_path, update_entry)
+        )
+        await broadcaster("log-step", "✅ Knowledge base updated.")
+    except Exception as e:
+        logger.error(f"Failed to update knowledge base: {e}", exc_info=True)
+        await broadcaster("log-error", f"Could not update knowledge base: {e}")
+
+def _append_to_file_sync(file_path: str, content: str):
+    """Synchronous file append operation."""
+    with open(file_path, "a", encoding="utf-8") as f:
+        f.write(content)
+
 # --- Updated Core Agent Logic ---
 
 async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, repo_name: str, pr_number: str, user_name: str):
@@ -166,11 +198,20 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
         
         await broadcaster("log-step", "✅ New documentation generated.")
         
-        # --- Step 5: Package the results (THIS IS THE FIX) ---
+        # --- Step 5: Update the Knowledge Base ---
+        # The agent now "remembers" what it wrote by adding it to the central guide.
+        await update_knowledge_base(logger, broadcaster, new_documentation)
+
+        # --- Step 6: Rebuild the vector store to include the new knowledge ---
+        # This makes the agent immediately smarter for the next run.
+        await broadcaster("log-step", "Re-indexing knowledge base with new information...")
+        await asyncio.to_thread(create_vector_store)
+        await broadcaster("log-step", "✅ Knowledge base is now up-to-date.")
+
+        # --- Step 7: Package the results for the PR ---
         
         # Get the raw source paths from metadata
         raw_paths = list(set([doc.metadata.get('source') for doc in retrieved_docs]))
-        
         source_files = []
         for path in raw_paths:
             # 1. Fix Windows slashes
@@ -183,7 +224,6 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
             source_files.append(fixed_path)
         
         print(f"Identified source files to update: {source_files}")
-        # --- END OF THE FIX ---
 
         
         pr_data = {
@@ -193,7 +233,7 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
             "pr_body": f"This is an AI-generated documentation update for PR #{pr_number}, originally authored by **@{user_name}**.\n\n**Confidence Score:** {confidence_percent}\n\n**Original PR:** '{pr_title}'\n**AI Analysis:** {analysis_summary}"
         }
 
-        # --- Step 6: Create the GitHub PR ---
+        # --- Step 8: Create the GitHub PR ---
         await broadcaster("log-step", "Attempting to create GitHub pull request...")
         
         try:
@@ -220,7 +260,7 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
             # Log the exception traceback for debugging
             logger.error(f"Agent failed for PR #{pr_number} ({repo_name}) with error: {e}", exc_info=True)
 
-        # --- Step 7: Log the final result ---
+        # --- Step 9: Log the final result ---
         if "Successfully" in result_message:
             # On success, log the specific format you requested.
             log_entry = (

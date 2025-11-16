@@ -1,10 +1,12 @@
 import os
 import faiss
+import asyncio
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import DirectoryLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings # <-- Changed import
 from dotenv import load_dotenv
+from llm_clients import get_seeder_chain # For initial knowledge seeding
 
 # --- Load API Key (still needed for LLM, but not for embeddings) ---
 load_dotenv()
@@ -15,12 +17,51 @@ INDEX_PATH = "faiss_index"
 
 # --- Helper Functions ---
 
+def _seed_initial_knowledge():
+    """
+    If the main knowledge base is empty, this function populates it with an
+    auto-generated summary of the project's source code.
+    """
+    knowledge_base_path = os.path.join(DATA_PATH, "@Knowledge_base.md")
+    
+    # Check if the guide is empty or just has placeholder content
+    if os.path.exists(knowledge_base_path) and os.path.getsize(knowledge_base_path) > 100:
+        return # Knowledge base already exists
+
+    print("🌱 Knowledge base is empty. Seeding initial knowledge from source code...")
+    
+    try:
+        # Read the content of the key source files
+        source_files = ['main.py', 'agent_logic.py', 'vector_store.py']
+        source_code = ""
+        for file_name in source_files:
+            with open(file_name, 'r', encoding='utf-8') as f:
+                source_code += f"--- {file_name} ---\n{f.read()}\n\n"
+        
+        # Get the LLM chain to generate the summary
+        seeder_chain = get_seeder_chain()
+        
+        # Generate the initial knowledge base content
+        initial_knowledge = seeder_chain.invoke({"source_code": source_code})
+        
+        # Write the content to the USER_GUIDE.md
+        with open(knowledge_base_path, 'w', encoding='utf-8') as f:
+            f.write(initial_knowledge)
+            
+        print("✅ Successfully seeded knowledge base with project summary.")
+
+    except Exception as e:
+        print(f"🔥 Error seeding knowledge base: {e}")
+
 def create_vector_store():
     """
     Loads docs from the DATA_PATH, splits them, creates embeddings,
     and saves a new FAISS index to INDEX_PATH.
     """
     print(f"Creating new vector store from data in '{DATA_PATH}'...")
+
+    # --- NEW: Seed knowledge if the guide is empty ---
+    _seed_initial_knowledge()
 
     # Define loader arguments to handle encoding errors
     loader_kwargs = {'encoding': 'utf-8', 'autodetect_encoding': True} # <-- Encoding fix
