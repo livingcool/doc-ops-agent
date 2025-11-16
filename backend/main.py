@@ -141,12 +141,11 @@ async def handle_github_webhook(
         repo_name = payload.get("repository", {}).get("full_name")
         pusher_name = payload.get("pusher", {}).get("name", "unknown-user")
         branch = payload.get('ref', 'refs/heads/unknown').split('/')[-1]
-
-        # --- THIS IS THE FIX: Ignore pushes to AI-generated branches to prevent feedback loops ---
+        
+        # --- THIS IS THE FIX: Ignore pushes to AI-generated branches to prevent feedback loops. ---
         if branch.startswith("ai-docs-fix-pr-"):
             await push_log("log-skip", f"Ignoring push to AI-generated branch '{branch}'.")
             return {"status": "ok", "message": "Event from AI branch ignored."}
-
 
         compare_url = payload.get("compare")
 
