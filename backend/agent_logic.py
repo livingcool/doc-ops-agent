@@ -230,7 +230,14 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
         
         # --- THIS IS THE FIX: Standardize path formatting for both modes ---
         # This ensures `source_files` is always a clean list of strings.
-        source_files = [path.replace("\\", "/") for path in raw_paths]
+        formatted_paths = [path.replace("\\", "/") for path in raw_paths]
+        
+        # --- THIS IS THE CRITICAL FIX: Ensure all paths are relative to the repo root ---
+        source_files = []
+        for path in formatted_paths:
+            if not path.startswith("backend/"):
+                path = f"backend/{path}"
+            source_files.append(path)
 
         pr_data = {
             "new_content": new_documentation,

@@ -348,3 +348,8 @@ Traceback (most recent call last):
 ValueError: too many values to unpack (expected 2)
 2025-11-16 11:32:13,785 - No relevant docs were retrieved using the relevance score threshold 0.3
 2025-11-16 11:35:26,198 - No relevant docs were retrieved using the relevance score threshold 0.3
+2025-11-16 11:47:09,616 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 11:47:17,454 - Failed to update file data/Knowledge_Base.md: 404 {"message": "Not Found", "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content", "status": "404"}. Skipping...
+2025-11-16 11:47:18,054 - Failed to update file agent_logic.py: 404 {"message": "Not Found", "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content", "status": "404"}. Skipping...
+2025-11-16 11:47:18,054 - No files were successfully updated, skipping PR creation.
+2025-11-16 11:47:18,057 - AGENT FAILED for PR #070ef5e (livingcool/doc-ops-agent). Reason: Failed to create PR. Reason: Error: No files were updated, so no PR was created.
