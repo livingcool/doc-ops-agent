@@ -150,6 +150,44 @@ def get_creator_chain():
     creator_chain = prompt | llm | StrOutputParser()
     return creator_chain
 
+# --- 4. The "Summarizer" Chain (FOR CLEAN LOGS) ---
+
+def get_summarizer_chain():
+    """
+    Returns a chain that creates a simple, human-readable summary of a change
+    for logging purposes, in the format you requested.
+    """
+    system_prompt = """
+    You are a technical project manager who writes concise, formal changelogs.
+    Based on the provided analysis and git diff, produce a single sentence that
+    describes the change and its impact.
+
+    The format should be:
+    "A push by {user_name} to the file `{file_name}` has {impact_description}."
+
+    - Keep the `impact_description` brief and high-level.
+    - Do not include "from this to that".
+    - Do not include line numbers.
+    - If multiple files are changed, pick the most important one.
+    """
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", """
+        CONTEXT:
+        - User: {user_name}
+        - AI Analysis: {analysis_summary}
+        - Git Diff:
+        ```diff
+        {git_diff}
+        ```
+        Please provide the single-sentence summary for the changelog:
+        """)
+    ])
+    
+    summarizer_chain = prompt | llm | StrOutputParser()
+    return summarizer_chain
+
 # --- 4. The "Seeder" Chain (NEW) ---
 
 def get_seeder_chain():

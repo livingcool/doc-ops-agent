@@ -10,9 +10,9 @@ from llm_clients import (
     get_analyzer_chain, 
     get_rewriter_chain, 
     format_docs_for_context,
-    get_creator_chain # <-- IMPORT THE NEW CHAIN
+    get_summarizer_chain # <-- IMPORT THE NEW CHAIN
 )
-from vector_store import get_retriever, add_docs_to_store
+from vector_store import get_retriever, create_vector_store
 
 # --- Load GitHub Token ---
 GITHUB_API_TOKEN = os.getenv("GITHUB_API_TOKEN")
@@ -23,11 +23,11 @@ try:
     retriever = get_retriever()
     analyzer_chain = get_analyzer_chain()
     rewriter_chain = get_rewriter_chain()
-    creator_chain = get_creator_chain() # <-- INITIALIZE THE NEW CHAIN
+    summarizer_chain = get_summarizer_chain() # <-- INITIALIZE THE NEW CHAIN
     print("✅ AI components are ready.")
 except Exception as e:
     print(f"🔥 FATAL ERROR: Failed to initialize AI components: {e}")
-    retriever, analyzer_chain, rewriter_chain, creator_chain = None, None, None, None
+    retriever, analyzer_chain, rewriter_chain, summarizer_chain = None, None, None, None
 
 # --- GitHub PR Creation Logic (Synchronous) ---
 def _create_github_pr_sync(logger, repo_name, pr_number, pr_title, pr_body, source_files, new_content):
@@ -116,7 +116,7 @@ async def create_github_pr_async(*args, **kwargs):
 # --- NEW: Knowledge Base Update Logic ---
 async def update_knowledge_base(logger, broadcaster, new_documentation: str):
     """Appends the newly generated documentation to the central knowledge base."""
-    knowledge_base_path = os.path.join(os.path.dirname(__file__), 'data', 'Knowledge_Base.md')
+    knowledge_base_path = os.path.join(os.path.dirname(__file__), 'data', '@Knowledge_base.md')
     
     try:
         await broadcaster("log-step", "Updating central knowledge base...")
@@ -158,8 +158,16 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
         # --- Step 1: Analyze the code diff ---
         await broadcaster("log-step", f"Analyzing diff for PR: '{pr_title}'...")
         analysis = await analyzer_chain.ainvoke({"git_diff": git_diff})
-        analysis_summary = analysis.get('analysis_summary', 'No summary provided.')
-        await broadcaster("log-step", f"Analysis: {analysis_summary}")
+        analysis_summary = analysis.get('analysis_summary', 'No analysis summary provided.')
+        
+        # --- NEW: Generate the clean, human-readable log message ---
+        human_readable_summary = await summarizer_chain.ainvoke({
+            "user_name": user_name,
+            "analysis_summary": analysis_summary,
+            "git_diff": git_diff
+        })
+        # Broadcast the clean summary instead of the raw analysis
+        await broadcaster("log-summary", human_readable_summary)
 
         # --- Step 2: Gatekeeping ---
         if not analysis.get('is_functional_change', False):
@@ -168,16 +176,12 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
 
         # --- Step 3: Retrieve relevant old docs ---
         await broadcaster("log-step", "Functional change. Searching for relevant docs...")
+        # Use `aget_relevant_documents` which returns scores with FAISS
+        retrieved_docs = await retriever.aget_relevant_documents(analysis_summary)
         
-        # --- THIS IS THE FIX: Perform a direct similarity search to guarantee scores ---
-        # The 'mmr' retriever is good for diversity but hides scores.
-        # We use the vectorstore directly to get scores for confidence checking.
-        docs_with_scores = await retriever.vectorstore.asimilarity_search_with_relevance_scores(
-            analysis_summary, k=5
-        )
-        
-        retrieved_docs = [doc for doc, score in docs_with_scores]
-        scores = [score for doc, score in docs_with_scores]
+        # --- THIS IS THE FIX ---
+        # The score is in the metadata when using FAISS with similarity_score_threshold
+        scores = [doc.metadata.get('score', 0.0) for doc in retrieved_docs]
         
         # Calculate confidence score (highest similarity)
         confidence_score = max(scores) if scores else 0.0
@@ -185,60 +189,53 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
 
         await broadcaster("log-step", f"Found {len(retrieved_docs)} relevant doc snippets. Confidence: {confidence_percent}")
         
-        # --- THIS IS THE CORE LOGIC CHANGE ---
         if not retrieved_docs:
-            # --- CREATE MODE ---
-            await broadcaster("log-step", "No relevant docs found. Switching to 'Create Mode'...")
-            new_documentation = await creator_chain.ainvoke({
-                "analysis_summary": analysis_summary,
-                "git_diff": git_diff
-            })
-            # For creation, the source file is always the main knowledge base
-            raw_paths = [os.path.join('data', 'Knowledge_Base.md')]
-        else:
-            # --- UPDATE MODE ---
-            # Make the confidence threshold configurable for easier testing
-            confidence_threshold = float(os.getenv("CONFIDENCE_THRESHOLD", 0.2))
-            if confidence_score < confidence_threshold: # Gatekeeping based on confidence
-                await broadcaster("log-skip", f"Confidence ({confidence_percent}) is below threshold. Skipping doc update.")
-                return
+            await broadcaster("log-skip", "No relevant docs found to update.")
+            return
+        
+        if confidence_score < 0.5: # Gatekeeping based on confidence
+            await broadcaster("log-skip", f"Confidence ({confidence_percent}) is below threshold. Skipping doc generation.")
+            return
+        old_docs_context = format_docs_for_context(retrieved_docs)
 
-            await broadcaster("log-step", "Relevant docs found. Generating updates with LLM...")
-            old_docs_context = format_docs_for_context(retrieved_docs)
-            new_documentation = await rewriter_chain.ainvoke({
-                "analysis_summary": analysis_summary,
-                "old_docs_context": old_docs_context,
-                "git_diff": git_diff
-            })
-            # Get source files from the retrieved docs
-            raw_paths = list(set([doc.metadata.get('source') for doc in retrieved_docs]))
+        # --- Step 4: Rewrite the docs ---
+        await broadcaster("log-step", "Generating new documentation with LLM...")
+        new_documentation = await rewriter_chain.ainvoke({
+            "analysis_summary": analysis_summary,
+            "old_docs_context": old_docs_context,
+            "git_diff": git_diff
+        })
         
         await broadcaster("log-step", "✅ New documentation generated.")
         
-        # --- Step 4: Update the Knowledge Base File ---
+        # --- Step 5: Update the Knowledge Base ---
         # The agent now "remembers" what it wrote by adding it to the central guide.
         await update_knowledge_base(logger, broadcaster, new_documentation)
 
-        # --- Step 5: Incrementally update the vector store (More Efficient) ---
-        # Instead of rebuilding, we add the new doc directly to the index.
-        await broadcaster("log-step", "Incrementally updating vector store with new knowledge...")
-        new_doc = Document(page_content=new_documentation, metadata={"source": os.path.join('data', 'Knowledge_Base.md')})
-        await asyncio.to_thread(add_docs_to_store, [new_doc])
+        # --- Step 6: Rebuild the vector store to include the new knowledge ---
+        # This makes the agent immediately smarter for the next run.
+        await broadcaster("log-step", "Re-indexing knowledge base with new information...")
+        await asyncio.to_thread(create_vector_store)
         await broadcaster("log-step", "✅ Knowledge base is now up-to-date.")
 
         # --- Step 7: Package the results for the PR ---
         
-        # --- THIS IS THE FIX: Standardize path formatting for both modes ---
-        # This ensures `source_files` is always a clean list of strings.
-        formatted_paths = [path.replace("\\", "/") for path in raw_paths]
-        
-        # --- THIS IS THE CRITICAL FIX: Ensure all paths are relative to the repo root ---
+        # Get the raw source paths from metadata
+        raw_paths = list(set([doc.metadata.get('source') for doc in retrieved_docs]))
         source_files = []
-        for path in formatted_paths:
-            if not path.startswith("backend/"):
-                path = f"backend/{path}"
-            source_files.append(path)
+        for path in raw_paths:
+            # 1. Fix Windows slashes
+            fixed_path = path.replace("\\", "/") 
+            
+            # 2. Add the 'backend/' prefix (since docs are in 'backend/data/')
+            if not fixed_path.startswith("backend/"):
+                fixed_path = f"backend/{fixed_path}"
+                
+            source_files.append(fixed_path)
+        
+        print(f"Identified source files to update: {source_files}")
 
+        
         pr_data = {
             "new_content": new_documentation,
             "source_files": source_files,
@@ -261,15 +258,14 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
             )
 
             if "Error" in pr_url:
-                result_message = f"Failed to create PR. Reason: {pr_url}"
-                await broadcaster("log-error", f"Failed to create PR: {pr_url}")
+                # Don't broadcast noisy errors to the frontend
+                result_message = f"Agent failed during PR creation. Reason: {pr_url}"
             else:
                 result_message = f"Successfully created documentation PR: {pr_url}"
                 await broadcaster("log-action", f"✅ Successfully created PR: {pr_url}")
 
         except Exception as e:
             result_message = f"Agent failed during PR creation with error: {e}"
-            await broadcaster("log-error", f"Agent failed with error: {e}")
             # Log the exception traceback for debugging
             logger.error(f"Agent failed for PR #{pr_number} ({repo_name}) with error: {e}", exc_info=True)
 
@@ -289,8 +285,9 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
             )
 
     except Exception as e:
+        # Catch all other exceptions and log them without crashing or flooding the UI
         logger.error(f"Agent failed for PR #{pr_number} ({repo_name}) with error: {e}", exc_info=True)
-        await broadcaster("log-error", f"Agent failed with error: {e}")
+        await broadcaster("log-skip", f"An unexpected error occurred. See server logs for details.")
         return
 
 # --- Self-Test ---
