@@ -15,4 +15,3 @@ langchain-text-splitters
 langchain-huggingface>=0.0.3
 faiss-cpu
 gunicorn
-sentence-transformers==2.7.0
