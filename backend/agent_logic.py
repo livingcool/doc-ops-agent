@@ -167,11 +167,11 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
         # --- Step 3: Retrieve relevant old docs ---
         await broadcaster("log-step", "Functional change. Searching for relevant docs...")
         # Use `aget_relevant_documents` which returns scores with FAISS
-        retrieved_docs_with_scores = await retriever.aget_relevant_documents(analysis_summary, return_scores=True)
+        retrieved_docs = await retriever.aget_relevant_documents(analysis_summary)
         
-        # Separate docs from scores
-        retrieved_docs = [doc for doc, score in retrieved_docs_with_scores]
-        scores = [score for doc, score in retrieved_docs_with_scores]
+        # --- THIS IS THE FIX ---
+        # The score is in the metadata when using FAISS with similarity_score_threshold
+        scores = [doc.metadata.get('score', 0.0) for doc in retrieved_docs]
         
         # Calculate confidence score (highest similarity)
         confidence_score = max(scores) if scores else 0.0
