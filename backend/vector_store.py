@@ -176,9 +176,10 @@ def get_retriever():
     # --- THIS IS THE FIX ---
     # Switch to 'mmr' (Maximal Marginal Relevance) search type. It's more robust,
     # works correctly with COSINE distance, and provides more diverse results.
+    # We remove the score_threshold here to let the agent logic handle confidence checking.
     return db.as_retriever(
         search_type="mmr",
-        search_kwargs={'k': 5, 'fetch_k': 20}
+        search_kwargs={'k': 5, 'fetch_k': 20} # Always fetch the top 5 diverse results
     )
 
 
