@@ -146,6 +146,16 @@ def _append_to_file_sync(file_path: str, content: str):
     with open(file_path, "a", encoding="utf-8") as f:
         f.write(content)
 
+def _extract_changed_lines(git_diff: str) -> str:
+    """A helper to extract only the added/modified lines from a git diff."""
+    changed_lines = []
+    for line in git_diff.split('\n'):
+        # We only care about lines that were added.
+        if line.startswith('+') and not line.startswith('+++'):
+            changed_lines.append(line[1:]) # Remove the '+'
+    
+    return "\n".join(changed_lines)
+
 # --- Updated Core Agent Logic ---
 
 async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, repo_name: str, pr_number: str, user_name: str):
@@ -158,15 +168,21 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
 
     try:
         # --- Step 1: Analyze the code diff ---
+        # --- TOKEN OPTIMIZATION: Analyze only the changed lines ---
+        concise_diff = _extract_changed_lines(git_diff)
+        if not concise_diff:
+            await broadcaster("log-skip", "No functional code changes detected in diff.")
+            return
+
         await broadcaster("log-step", f"Analyzing diff for PR: '{pr_title}'...")
-        analysis = await analyzer_chain.ainvoke({"git_diff": git_diff})
+        analysis = await analyzer_chain.ainvoke({"git_diff": concise_diff})
         analysis_summary = analysis.get('analysis_summary', 'No analysis summary provided.')
         
         # --- NEW: Generate the clean, human-readable log message ---
         human_readable_summary = await summarizer_chain.ainvoke({
             "user_name": user_name,
             "analysis_summary": analysis_summary,
-            "git_diff": git_diff
+            "git_diff": concise_diff # Use the concise diff here as well
         })
         # Broadcast the clean summary instead of the raw analysis
         await broadcaster("log-summary", human_readable_summary)
@@ -201,7 +217,7 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
             await broadcaster("log-step", "Low confidence or no docs found. Switching to 'Create Mode'...")
             new_documentation = await creator_chain.ainvoke({
                 "analysis_summary": analysis_summary,
-                "git_diff": git_diff
+                "git_diff": concise_diff # Use the concise diff
             })
             raw_paths = [os.path.join('data', 'Knowledge_Base.md')]
             if confidence_score > 0:
@@ -213,7 +229,7 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
             new_documentation = await rewriter_chain.ainvoke({
                 "analysis_summary": analysis_summary,
                 "old_docs_context": old_docs_context,
-                "git_diff": git_diff
+                "git_diff": git_diff # The rewriter gets the full diff for context
             })
             raw_paths = list(set([doc.metadata.get('source') for doc in retrieved_docs]))
         
