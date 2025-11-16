@@ -197,7 +197,7 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
             raw_paths = [os.path.join('data', 'Knowledge_Base.md')]
         else:
             # --- UPDATE MODE ---
-            if confidence_score < 0.5: # Gatekeeping based on confidence
+            if confidence_score < 0.3: # Gatekeeping based on confidence
                 await broadcaster("log-skip", f"Confidence ({confidence_percent}) is below threshold. Skipping doc update.")
                 return
 
