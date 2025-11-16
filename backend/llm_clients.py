@@ -162,8 +162,8 @@ def get_summarizer_chain():
     Based on the provided analysis and git diff, produce a single sentence that
     describes the change and its impact.
 
-    The format should be:
-    "A push by {user_name} to the file `{file_name}` has {impact_description}."
+    Your response MUST be a single sentence in this exact format:
+    "A push by {user_name} to the file `<file_name>` has <impact_description>."
 
     - Keep the `impact_description` brief and high-level.
     - Do not include "from this to that".
