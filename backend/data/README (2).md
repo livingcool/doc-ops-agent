@@ -1,116 +1,172 @@
-## Project Giva: AI-Powered Document Q\&A
+## Project Giva: AI-Powered Document Q&A
 
 ### 1. Project Overview
 
-Project Giva is a **Python-based RAG (Retrieval-Augmented Generation) system** that allows users to ask questions about their own documents. It uses a **vector database** to store document information and leverages a **Large Language Model (LLM)** to generate human-like answers based on the retrieved context.
+Project Giva is a **Python-based RAG (Retrieval-Augmented Generation) system** that allows users to ask questions about their local documents. It leverages AI to provide insightful answers based on the content of provided files.
 
 The core functionalities include:
 
-* **Document Ingestion:** Loads text files, splits them into chunks, creates embeddings, and stores them in a vector database for efficient searching.
-* **Query Enhancement:** Automatically expands short user queries to improve the relevance of search results.
-* **Conversational Memory:** Rememberss the last few questions and answers to provide context-aware responses in an ongoing conversation.
-* **Advanced RAG Pipeline:** Retrieves relevant document chunks, assesses a confidence score, and generates a detailed, well-structured answer.
-* **Source Citing:** Lists the source documents (and pages) that were used to generate the answer, along with a relevance score for each.
-* **Interactive Console:** Provides a user-friendly command-line interface to interact with the system.
+*   **Document Ingestion:** Loads text files, splits them into chunks, creates embeddings, and stores them in a vector database for efficient searching.
+*   **Query Enhancement:** Automatically expands short user queries to improve the relevance of search results.
+*   **Conversational Memory:** Remembers the last few questions and answers to provide context-aware responses in an ongoing conversation.
+*   **Advanced RAG Pipeline:** Retrieves relevant document chunks, assesses a confidence score, and generates a detailed, well-structured answer.
+*   **Source Citing:** Lists the source documents (and pages) that were used to generate the answer, along with a relevance score for each.
+*   **Interactive Console:** Provides a user-friendly command-line interface to interact with the system.
+*   **API Endpoints:** Exposes health checks and a webhook for GitHub integration.
 
-### 2. File Structure
+### 2. Setup and Initialization
 
-The main project logic is contained within the `e:\2025\Project_Learning\RAG\` directory.
+1.  **Environment Variables:** Loads environment variables, specifically `GEMINI_API_KEY`.
+2.  **Model Initialization:** Initializes the `ChatGoogleGenerativeAI` model (`gemini-1.5-flash`).
+3.  **Component Initialization:** Creates instances of `EmbeddingPipeline`, `VectorStore`, and `RAGRetriever`.
 
-| File/Folder | Description |
-| :--- | :--- |
-| `app.py` | Main application entry point and RAG orchestration logic. |
-| `main.py` | A placeholder/scaffolding file, not used by `app.py`. |
-| `src/` | (Inferred) A package containing core RAG components. |
-| `src/__init__.py` | |
-| `src/document_loader.py` | (Inferred) Contains `load_all_documents`. |
-| `src/embedding.py` | (Inferred) Contains `EmbeddingPipeline`. |
-| `src/vectorstore.py` | (Inferred) Contains `VectorStore`. |
-| `src/retriever.py` | (Inferred) Contains `RAGRetriever`. |
-| *Other files* | Unrelated scripts or temporary files (see Section 6). |
+### 3. Data Ingestion
 
-### 3. Code Explanation: `app.py`
+*   The system checks if the vector store is already populated.
+*   If not, it attempts to load all `.md` documents from the `data/text_files` directory.
+*   If no documentation files are found, a warning is issued, and an empty index is created. The agent will still run but won't retrieve any information until documents are added and the agent is restarted.
+*   The `EmbeddingPipeline` processes and embeds the documents, which are then added to the `VectorStore`.
 
-This is the central file that orchestrates the entire RAG pipeline.
+### 4. Interactive Console Loop
 
-#### Key Components & Functions
+*   An infinite `while` loop prompts the user for questions.
+*   Special commands are supported:
+    *   `exit` / `quit`: Terminates the application.
+    *   `reset`: Clears the conversation history.
+*   User queries are passed to `enhance_query_with_ai`.
+*   The potentially enhanced query, along with the conversation history, is then processed by `rag_advanced`.
 
-| Function | Purpose | Logic |
-| :--- | :--- | :--- |
-| `enhance_query_with_ai(...)` | To improve document retrieval for short or ambiguous user questions. | If a user's query is less than three words long, it asks the LLM to expand it into a more comprehensive search query, adding synonyms and context. For longer queries, it uses the original query. |
-| `rag_simple(...)` | A basic RAG implementation. | Retrieves the top *k* documents, combines their content into a single context, and passes it to the LLM with a straightforward prompt. **Note:** This function is defined but not used in the main execution loop. |
-| `rag_advanced(...)` | The primary, feature-rich RAG pipeline used by the application. | Retrieves documents based on the query, *top\_k* count, and a minimum similarity score (`min_score`). Constructs a list of **sources** (file name, page, similarity score). Calculates a **confidence** score (highest similarity score). Incorporates `conversation_history` into the LLM prompt. Uses a detailed, structured prompt to instruct the AI ("giva") on how to analyze and structure its answer. Returns a dictionary with `answer`, `sources`, `confidence`. |
+### 5. API Endpoints
 
-#### Main Execution Block (`if __name__ == "__main__":`)
+*   **/api/health:** A GET endpoint that returns the current status of the Doc-Ops Agent.
+*   **/api/stream/logs:** A WebSocket endpoint for streaming logs to the React frontend.
+*   **/api/github/webhook:** An endpoint to receive and process GitHub webhooks for `pull_request` (merged) and `push` events.
+    *   **Authentication:** Requires a valid `X-Hub-Signature-256` header for security.
+    *   **Error Handling:** Provides specific error messages for missing or invalid signatures, and server configuration issues (e.g., missing `GITHUB_SECRET_TOKEN`).
 
-This block runs the interactive console application.
+### 6. Installation
 
-1.  **Setup:** Loads environment variables (specifically `GEMINI_API_KEY`) and initializes the `ChatGoogleGenerativeAI` model (`gemini-1.5-flash`).
-2.  **Component Initialization:** Creates instances of the core components from the `src` package: `EmbeddingPipeline`, `VectorStore`, and `RAGRetriever`.
-3.  **Data Ingestion:**
-    * Checks if the vector store is already populated.
-    * If not, it loads all documents from the `data/text_files` directory.
-    * Uses the `EmbeddingPipeline` to process and embed the documents and adds them to the `VectorStore`.
-4.  **Interactive Console Loop:**
-    * Starts an infinite `while` loop, prompting the user for a question.
-    * Listens for special commands: `exit`/`quit` to terminate and `reset` to clear the conversation history.
-    * The user's query is passed to `enhance_query_with_ai`.
-    * The (potentially enhanced) query is then passed to `rag_advanced` along with the current conversation history.
-    * The new question and the start of the AI's answer are appended to the `conversation_history`. The history is trimmed to the last 10 exchanges.
-    * The results are displayed in a clean, formatted block.
+*(Installation instructions would typically follow here in a full README)*
 
-### 4. How to Run the Project
+---
 
-#### Prerequisites
+### Relevant Code Changes
 
-Ensure you have Python installed and the required packages from `requirements.txt` (listed below).
-
-# Expected Output
-
---- Starting RAG Pipeline Orchestration ---
-✅ LLM initialized (gemini-1.5-flash)
-
---- INGESTION: Starting Document Loading and Indexing ---
---- INGESTION COMPLETE ---
-
---- Giva-Powered RAG Console Ready ---
-🤖 Enhanced with giva conversation memory and intelligent document analysis
-Commands: 'exit'/'quit' to close, 'reset' to clear conversation history
-Ask questions about your documents for intelligent AI-powered answers!
-
-Ask a question about your documents (or type 'exit'):
-
-# Subsequent Runs & Interaction:
-
-Ask a question about your documents (or type 'exit'): What is the project about?
-🔍 Searching and generating answer...
-
-
-🤖 GIVA-POWERED RAG RESPONSE
-
-📝 QUESTION: What is the project about?
-🎯 CONFIDENCE: 0.8123 (High)
-📚 DOCUMENTS ANALYZED: 5
-
-💡 GIVA ANSWER:
-
-Based on the provided documents, this project is a Retrieval-Augmented Generation (RAG) system designed to answer questions from a local document knowledge base.
-
-Key features include:
-* **AI-Powered Analysis:** It uses an AI assistant named "giva" to provide answers.
-* **Source-Based Answers:** The system relies on context retrieved from documents to formulate its responses.
-* **Conversational Context:** It can maintain a conversation history to provide more coherent answers over multiple questions.
-
-📖 SOURCES (5 documents):
-
-  1. 🔥 my_document_1.pdf (Page: 2) - Relevance: 0.8123
-     Preview: ...The core of the RAG pipeline involves retrieving relevant text chunks from the indexed vector store and feeding them...
-  2. 📄 another_doc.txt (Page: 1) - Relevance: 0.6543
-     Preview: ...giva is an AI assistant specialized in analyzing and answering questions based on provided documents. Use the following...
-  ...
-
-
-#### Installation
-
-```bash
-pip install langchain langchain_community langchain_core langchain_google_genai pypdf pymupdf chromadb faiss-cpu sentence-transformers python-dotenv 
+```diff
+diff --git a/backend/agent_logic.py b/backend/agent_logic.py
+index 3adee82..d729004 100644
+--- a/backend/agent_logic.py
++++ b/backend/agent_logic.py
+@@ -112,7 +112,7 @@ async def create_github_pr_async(*args, **kwargs):
+ 
+ # --- Updated Core Agent Logic ---
+ 
+-async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, repo_name: str, pr_number: int, user_name: str):
++async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, repo_name: str, pr_number: str, user_name: str):
+     """This is the main 'brain' of the agent. It runs the full analysis-retrieval-rewrite pipeline."""
+     
+     if not retriever:
+diff --git a/backend/main.py b/backend/main.py
+index 0ef8bc0..79e94c8 100644
+--- a/backend/main.py
++++ b/backend/main.py
+@@ -48,6 +48,11 @@ async def push_log(event: str, data: str):
+     allow_headers=["*"],
+ )
+ 
++
++# --- Health Check Endpoint ---
++@app.get("/api/health")
++async def health_check():
++    return {"status": "ok", "message": "Doc-Ops Agent is healthy"}
++
+ # --- 1. The "Live Feed" Endpoint (for React) ---
+ @app.get("/api/stream/logs")
+ async def stream_logs(request: Request):
+@@ -70,11 +75,11 @@ async def handle_github_webhook(
+     raw_body = await request.body()
+     
+     if not GITHUB_SECRET_TOKEN:
+-        print("ERROR: GITHUB_SECRET_TOKEN is not set!")
+-        raise HTTPException(status_code=500, detail="Server configuration error")
++        print("ERROR: GITHUB_SECRET_TOKEN is not configured on the server.")
++        raise HTTPException(status_code=500, detail="Internal server error: Webhook secret not set.")
+         
+     if not x_hub_signature_256:
+-        raise HTTPException(status_code=403, detail="Signature missing")
++        raise HTTPException(status_code=403, detail="X-Hub-Signature-256 header is missing.")
+ 
+     hash_object = hmac.new(
+         GITHUB_SECRET_TOKEN.encode('utf-8'),
+@@ -84,8 +89,8 @@ async def handle_github_webhook(
+     expected_signature = "sha256=" + hash_object.hexdigest()
+ 
+     if not hmac.compare_digest(expected_signature, x_hub_signature_256):
+-        print("ERROR: Invalid webhook signature")
+-        raise HTTPException(status_code=403, detail="Invalid signature")
++        print("ERROR: Webhook signature mismatch.")
++        raise HTTPException(status_code=403, detail="Invalid webhook signature.")
+ 
+     payload = await request.json()
+ 
+@@ -192,5 +197,6 @@ if __name__ == "__main__":
+     import uvicorn
+     print("--- Starting Doc-Ops Agent Backend ---")
++    print("Listening for GitHub webhooks for 'pull_request' (merged) and 'push' events.")
+     print("--- AI Models are warming up... ---")
+     uvicorn.run(app, host="0.0.0.0", port=8000)
+ \ No newline at end of file
+diff --git a/backend/vector_store.py b/backend/vector_store.py
+index d77d58f..cf4947e 100644
+--- a/backend/vector_store.py
++++ b/backend/vector_store.py
+@@ -37,23 +37,11 @@ def create_vector_store():
+     
+     try:
+         documents = loader.load()
+-        if not documents:
+-            print(f"Error: No .md documents found in '{DATA_PATH}'.")
+-            print("Please add your documentation files to the 'backend/data' folder.")
+-            return None
+     except Exception as e:
+         print(f"Error loading documents: {e}")
+         return None
+ 
+-    # 2. Split the documents into smaller, searchable chunks
+-    text_splitter = RecursiveCharacterTextSplitter(
+-        chunk_size=1000,
+-        chunk_overlap=100
+-    )
+-    docs = text_splitter.split_documents(documents)
+-    print(f"Loaded and split {len(documents)} documents into {len(docs)} chunks.")
+-
+-    # 3. Create embeddings (using local model)
++# 2. Create embeddings (using local model)
+     print("Loading local embedding model... (This may download ~500MB on first run)")
+     try:
+         embeddings = HuggingFaceEmbeddings(
+@@ -65,6 +53,23 @@ def create_vector_store():
+         print(f"Error initializing local embedding model: {e}")
+         return None
+ 
++# If no documents are found, create an empty index and save it.
++    if not documents:
++        print(f"Warning: No .md documents found in '{DATA_PATH}'. Creating an empty index.")
++        print("The agent will run, but won't find docs until you add them and restart.")
++        empty_faiss = FAISS.from_texts(["placeholder"], embeddings)
++        empty_faiss.delete([empty_faiss.index_to_docstore_id[0]])
++        empty_faiss.save_local(INDEX_PATH)
++        return empty_faiss
++
++# 2. Split the documents into smaller, searchable chunks
++    text_splitter = RecursiveCharacterTextSplitter(
++        chunk_size=1000,
++        chunk_overlap=100
++    )
++    docs = text_splitter.split_documents(documents)
++    print(f"Loaded and split {len(documents)} documents into {len(docs)} chunks.")
++
+     # 4. Create FAISS index from documents and embeddings
+     print("Creating FAISS index... This may take a moment.")
+     try:
+```
