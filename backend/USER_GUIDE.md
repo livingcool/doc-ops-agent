@@ -208,7 +208,8 @@ To deploy the backend to a persistent cloud service like Render, follow these st
     *   **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 10000`
         *   Use the port recommended by Render (e.g., `10000`).
 3.  **Add Environment Variables**: Go to the **Environment** tab for your new service and add the same `GITHUB_SECRET_TOKEN`, `GITHUB_API_TOKEN`, and `OPENAI_API_KEY` that you have in your local `.env` file.
-4.  **Deploy**: Trigger a manual deploy from the Render dashboard to start the service.
+4.  **Add Environment Variables**: Go to the **Environment** tab for your new service and add the same `GITHUB_SECRET_TOKEN`, `GITHUB_API_TOKEN`, and `GOOGLE_API_KEY` that you have in your local `.env` file. You can also add `CONFIDENCE_THRESHOLD` here if you want to override the default.
+5.  **Deploy**: Trigger a manual deploy from the Render dashboard to start the service.
 5.  **Update Your Webhook**: Once deployed, Render will provide a public URL (e.g., `https://your-app-name.onrender.com`). Update your GitHub webhook's **Payload URL** to point to this new URL (e.g., `https://your-app-name.onrender.com/api/webhook/github`).
 
 Your agent is now live and will run automatically in the cloud!
