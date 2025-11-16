@@ -1974,3 +1974,7 @@ Traceback (most recent call last):
   File "C:\Users\ganes\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 89, in __await__
     raise exceptions.from_grpc_error(rpc_error) from rpc_error
 google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-11-16 23:16:35,786 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 23:16:46,923 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 23:16:49,153 - This is an AI-generated documentation update for PR #81dba42, originally authored by @livingcool.
+Original PR: 'Push to main: LLm model changed' AI Analysis: Functional change: The model name 'gemini-1.5-flash-latest' was changed to 'gemini-2.5-flash-lite' due to a 'NotFound: 404' error, indicating a change in the available or supported AI models.
