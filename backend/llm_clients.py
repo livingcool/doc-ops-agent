@@ -10,7 +10,7 @@ load_dotenv()
 
 # Initialize the Generative AI model
 llm = ChatGoogleGenerativeAI(
-    model="learnlm-2.0-flash-experimental", 
+    model="gemini-2.5-flash", 
     temperature=0.2 
 )
 
