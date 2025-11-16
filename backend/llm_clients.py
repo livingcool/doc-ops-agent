@@ -188,7 +188,7 @@ def get_summarizer_chain():
     summarizer_chain = prompt | llm | StrOutputParser()
     return summarizer_chain
 
-# --- 4. The "Seeder" Chain (NEW) ---
+# --- 5. The "Seeder" Chain (NEW) ---
 
 def get_seeder_chain():
     """
