@@ -1,275 +1,249 @@
-import os
-from dotenv import load_dotenv
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.documents import Document
+# Doc-Ops Agent
 
-# --- Load API Key ---
-load_dotenv()
+This project provides an automated agent that monitors GitHub repositories for code changes. It analyzes these changes, retrieves relevant existing documentation, and either updates the documentation or creates new documentation if none exists. The agent then automatically creates a pull request with the generated documentation updates.
 
-# Initialize the Generative AI model
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash-lite", 
-    temperature=0.2 
-)
+## Purpose
 
-# --- 1. The "Analyzer" Chain ---
+The primary goal of this project is to streamline and improve the documentation process for software projects. By automatically generating and updating documentation based on code changes, it aims to:
 
-def get_analyzer_chain():
-    """
-    Returns a chain that analyzes a 'git diff' and outputs JSON.
-    """
-    
-    system_prompt = """
-    You are a 'Doc-Ops' code analyzer. Your task is to analyze a 'git diff' 
-    and determine if the change is a 'trivial' change (like fixing a typo, 
-    adding comments, or refactoring code) or a 'functional' change 
-    (like adding a feature, changing an API endpoint, or modifying user-facing behavior).
+*   **Keep documentation up-to-date:** Reduce the burden on developers to manually update documentation, ensuring it accurately reflects the current codebase.
+*   **Improve documentation quality:** Leverage AI to generate clear, concise, and contextually relevant documentation.
+*   **Enhance discoverability:** Make it easier for team members and contributors to find and understand project information.
+*   **Automate repetitive tasks:** Free up developer time by handling the creation and updating of documentation automatically.
 
-    You MUST respond in JSON format with two keys:
-    1. 'is_functional_change': (boolean) True if the change impacts docs, False otherwise.
-    2. 'analysis_summary': (string) A one-sentence summary of the functional change. 
-       If 'is_functional_change' is false, this should explain why (e.g., "Refactor, no behavior change.")
+## Core Technologies
 
-    Examples:
-    - Diff adding a comment: {{"is_functional_change": false, "analysis_summary": "Trivial change: Added code comments."}}
-    - Diff changing an API route: {{"is_functional_change": true, "analysis_summary": "Functional change: Modified the '/api/v1/users' endpoint."}}
-    - Diff changing button text: {{"is_functional_change": true, "analysis_summary": "Functional change: Updated user-facing text on the dashboard."}}
-    """
+*   **Python:** The primary programming language for the backend application.
+*   **FastAPI:** A modern, fast (high-performance) web framework for building APIs with Python. It's used here to create the webhook endpoint and the live log stream.
+*   **LangChain:** An open-source framework for developing applications powered by language models. It's used for orchestrating the AI's analysis, retrieval, and generation capabilities.
+*   **Hugging Face Transformers:** Used for local, efficient embedding generation (`all-MiniLM-L6-v2`).
+*   **FAISS:** A library for efficient similarity search and clustering of dense vectors. Used here to store and retrieve documentation embeddings.
+*   **GitHub API (PyGithub):** Used to interact with GitHub, specifically for fetching code diffs and creating pull requests.
+*   **Requests:** A Python HTTP library, used for making direct API calls to GitHub for diffs.
+*   **Uvicorn:** An ASGI server, used to run the FastAPI application.
+*   **python-dotenv:** Used to load environment variables from a `.env` file.
+*   **SSE-Starlette:** A library for Server-Sent Events, used to stream logs to the frontend in real-time.
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", "Analyze the following git diff:\n\n```diff\n{git_diff}\n```")
-    ])
-    
-    # We pipe the prompt to the LLM and then to a JSON parser
-    analyzer_chain = prompt | llm | JsonOutputParser()
-    
-    return analyzer_chain
+## How Components Work Together
 
-# --- 2. The "Rewriter" Chain (UPDATED) ---
+The system is designed around a central FastAPI application that listens for GitHub events and orchestrates the AI agent's workflow.
 
-def get_rewriter_chain():
-    """
-    Returns a chain that rewrites documentation.
-    """
-    
-    # --- THIS PROMPT IS UPDATED ---
-    system_prompt = """
-    You are an expert technical writer. Your task is to rewrite old documentation 
-    to match the new code changes.
+1.  **GitHub Webhook (`/api/webhook/github`):**
+    *   This endpoint receives `POST` requests from GitHub.
+    *   It verifies the request's authenticity using a shared secret token (`GITHUB_SECRET_TOKEN`) and the `X-Hub-Signature-256` header.
+    *   It specifically listens for `pull_request` events (when a PR is `closed` and `merged`) and `push` events.
+    *   Upon receiving a relevant event, it extracts the code diff URL from the payload.
+    *   It uses the `GITHUB_API_TOKEN` and the `requests` library to fetch the actual code diff content from GitHub.
+    *   It then triggers the `agent_logic.run_agent_analysis` function asynchronously, passing the diff content and relevant metadata (like PR title, repo name, etc.).
 
-    You will be given:
-    1. The Old Documentation (as a list of relevant snippets).
-    2. The 'git diff' of the new code.
-    3. An analysis of what changed.
+2.  **Agent Logic (`agent_logic.py`):**
+    *   **`run_agent_analysis`:** This is the core of the agent.
+        *   It first uses an `analyzer_chain` (powered by LangChain) to analyze the provided `git_diff`, determining if it's a functional change and summarizing it.
+        *   If it's a functional change, it uses a `retriever` (powered by FAISS and HuggingFace embeddings) to search a vector store of existing documentation for relevant snippets based on the analysis summary.
+        *   **Update Mode:** If relevant documentation is found and the confidence score is above a configurable `CONFIDENCE_THRESHOLD` (defaults to 0.2), it uses a `rewriter_chain` to generate updated documentation based on the analysis and the retrieved snippets.
+        *   **Create Mode:** If no relevant documentation is found, it uses a `creator_chain` to generate entirely new documentation based on the analysis and the diff.
+        *   **Knowledge Base Update:** The newly generated documentation is appended to a central `Knowledge_Base.md` file.
+        *   **Vector Store Re-indexing:** After updating the knowledge base, the `vector_store.create_vector_store()` function is called to rebuild the FAISS index, incorporating the new information. This makes the agent immediately "smarter" for subsequent runs.
+        *   **Pull Request Creation:** Finally, it uses the `create_github_pr_async` function to create a new branch, stage the changes, and open a pull request on GitHub with the generated documentation.
 
-    Your job is to return the new, rewritten documentation.
-    - Maintain the original tone and formatting (e.g., Markdown).
-    - Do not add commentary like "Here is the new documentation:".
-    
-    **CRITICAL INSTRUCTION:** After rewriting the documentation, you MUST append
-    the relevant code diff. The final output must be in this format:
-    
-    [Your rewritten documentation text]
-    
-    ---
-    
-    ### Relevant Code Changes
-    ```diff
-    [The exact 'git diff' you were provided]
-    ```
-    """
-    # --- END OF UPDATE ---
-    
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", """
-        Here is the context:
-        
-        ANALYSIS OF CHANGE:
-        {analysis_summary}
-        
-        OLD DOCUMENTATION SNIPPETS:
-        {old_docs_context}
-        
-        CODE CHANGE (GIT DIFF):
-        ```diff
-        {git_diff}
-        ```
-        
-        Please provide the new, updated documentation based on these changes:
-        """)
-    ])
-    
-    # We pipe this to the LLM and then to a simple string parser
-    rewriter_chain = prompt | llm | StrOutputParser()
-    
-    return rewriter_chain
+3.  **Vector Store (`vector_store.py`):**
+    *   **`create_vector_store`:** This function is responsible for building the FAISS index.
+        *   It first checks if the `Knowledge_Base.md` is empty and, if so, uses a `seeder_chain` to generate an initial summary of the project's source code to populate it.
+        *   It loads all `.md` files from the `data/` directory.
+        *   It uses `RecursiveCharacterTextSplitter` to break down the documents into manageable chunks.
+        *   It generates embeddings for these chunks using a local `HuggingFaceEmbeddings` model.
+        *   It creates a FAISS index from these embeddings and saves it locally to the `faiss_index/` directory.
+    *   **`load_vector_store`:** Loads an existing FAISS index from disk.
+    *   **`get_retriever`:** This is the primary function used by the agent logic. It attempts to load an existing index; if none is found, it triggers `create_vector_store`. It then returns a LangChain retriever object configured for similarity search with a score threshold.
 
-# --- 3. The "Creator" Chain (NEW) ---
+4.  **Live Logging (`/api/stream/logs`):**
+    *   This endpoint uses Server-Sent Events (SSE) to stream log messages from the `log_queue` to any connected client (e.g., a frontend dashboard).
+    *   The webhook handler and agent logic push log messages (categorized by event type like `log-step`, `log-error`, `log-action`) into this queue.
 
-def get_creator_chain():
-    """
-    Returns a chain that creates a NEW documentation section from scratch
-    when no existing documentation is found.
-    """
-    system_prompt = """
-    You are an expert technical writer tasked with creating a new documentation
-    section for a feature that has no prior documentation.
+5.  **Environment Variables:**
+    *   `GITHUB_SECRET_TOKEN`: Used to verify incoming GitHub webhooks.
+    *   `GITHUB_API_TOKEN`: Used by the agent to authenticate with the GitHub API for fetching diffs and creating pull requests.
 
-    You will be given:
-    1. A 'git diff' of the new code.
-    2. An AI-generated analysis of what changed.
+In essence, the system acts as an automated documentation assistant. It watches for code changes, uses AI to understand them and interact with existing knowledge, updates that knowledge, and then proposes the documentation changes back to the project via a pull request.
 
-    Your job is to write a clear, concise documentation section explaining the new
-    feature. The output should be ready to be added to a larger document.
-    - Use Markdown formatting.
-    - Explain the feature's purpose and how it works based on the code.
-    - Do not add commentary like "Here is the new documentation:".
-    """
-    
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", """
-        Here is the context for the new feature:
-        
-        ANALYSIS OF CHANGE:
-        {analysis_summary}
-        
-        CODE CHANGE (GIT DIFF):
-        ```diff
-        {git_diff}
-        ```
-        
-        Please write a new documentation section for this feature:
-        """)
-    ])
-    
-    creator_chain = prompt | llm | StrOutputParser()
-    return creator_chain
+---
 
-# --- 4. The "Seeder" Chain (NEW) ---
+## Agent Logic (`agent_logic.py`)
 
-def get_seeder_chain():
-    """
-    Returns a chain that creates an initial project overview from source code
-    to seed the knowledge base.
-    """
-    system_prompt = """
-    You are an expert technical writer tasked with creating a high-level project overview
-    to serve as the initial knowledge base for a software project.
+*   **`run_agent_analysis`:** This is the core of the agent.
+    *   It first uses an `analyzer_chain` (powered by LangChain) to analyze the provided `git_diff`, determining if it's a functional change and summarizing it.
+    *   If it's a functional change, it uses a `retriever` (powered by FAISS and HuggingFace embeddings) to search a vector store of existing documentation for relevant snippets based on the analysis summary.
+    *   **Update Mode:** If relevant documentation is found and the confidence score is above a configurable `CONFIDENCE_THRESHOLD` (defaults to 0.2), it uses a `rewriter_chain` to generate updated documentation based on the analysis and the retrieved snippets.
+    *   **Create Mode:** If no relevant documentation is found, it uses a `creator_chain` to generate entirely new documentation based on the analysis and the diff.
+    *   **Knowledge Base Update:** The newly generated documentation is appended to a central `Knowledge_Base.md` file.
 
-    You will be given the concatenated source code of the project's key files.
+---
 
-    Your job is to write a "README" style document that explains:
-    1.  What the project is and its main purpose.
-    2.  The core technologies used.
-    3.  A brief explanation of how the main components (e.g., main.py, agent_logic.py) work together.
-
-    The output should be in Markdown format and serve as a good starting point for project documentation.
-    Do not add commentary like "Here is the new documentation:".
-    """
-    
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", """
-        Here is the source code of the project:
-        
-        ```python
-        {source_code}
-        ```
-        
-        Please generate the initial project documentation based on this code.
-        """)
-    ])
-    
-    seeder_chain = prompt | llm | StrOutputParser()
-    return seeder_chain
-
-# --- Helper Function to format docs ---
-def format_docs_for_context(docs: list[Document]) -> str:
-    """Converts a list of LangChain Documents into a single string."""
-    formatted = []
-    for i, doc in enumerate(docs):
-        snippet = f"--- Snippet {i+1} (Source: {doc.metadata.get('source', 'Unknown')}) ---\n"
-        snippet += doc.page_content
-        formatted.append(snippet)
-    
-    if not formatted:
-        return "No old documentation snippets were found."
-        
-    return "\n\n".join(formatted)
-
-
-# --- Self-Test ---
-if __name__ == "__main__":
-    
-    print("--- Running LLM Clients Self-Test ---")
-    
-    # 1. Test Analyzer Chain
-    print("\n--- Testing Analyzer Chain (Functional Change) ---")
-    try:
-        analyzer = get_analyzer_chain()
-        test_diff_functional = """
-        --- a/api/routes.py
-        +++ b/api/routes.py
-        @@ -10,5 +10,6 @@
-         @app.route('/api/v1/users')
-         def get_users():
-             return jsonify(users)
-        +
-        +@app.route('/api/v1/users/profile')
-        +def get_user_profile():
-        +    return jsonify({"name": "Test User", "status": "active"})
-        """
-        analysis = analyzer.invoke({"git_diff": test_diff_functional})
-        print(f"Response:\n{analysis}")
-        assert analysis['is_functional_change'] == True
-        print("Test Passed.")
-    except Exception as e:
-        print(f"Test Failed: {e}")
-        print("!! Check if your GOOGLE_API_KEY is set in .env !!")
-
-    # 2. Test Analyzer Chain (Trivial Change)
-    print("\n--- Testing Analyzer Chain (Trivial Change) ---")
-    try:
-        analyzer = get_analyzer_chain()
-        test_diff_trivial = """
-        --- a/api/routes.py
-        +++ b/api/routes.py
-        @@ -1,3 +1,3 @@
-         # This file contains all API routes for our app.
-         from flask import Flask, jsonify
-         
-         # TODO: Add more routes later
-        """
-        analysis = analyzer.invoke({"git_diff": test_diff_trivial})
-        print(f"Response:\n{analysis}")
-        assert analysis['is_functional_change'] == False
-        print("Test Passed.")
-    except Exception as e:
-        print(f"Test Failed: {e}")
-
-    # 3. Test Rewriter Chain
-    print("\n--- Testing Rewriter Chain ---")
-    try:
-        rewriter = get_rewriter_chain() # <-- Fixed typo
-        test_old_docs = [
-            Document(page_content="Our API has one user endpoint: /api/v1/users.", metadata={"source": "api.md"})
-        ]
-        formatted_docs = format_docs_for_context(test_old_docs)
-        
-        rewrite = rewriter.invoke({
-            "analysis_summary": "Functional change: Added new '/api/v1/users/profile' endpoint.",
-            "old_docs_context": formatted_docs,
-            "git_diff": test_diff_functional
-        })
-        print(f"Response:\n{rewrite}")
-        assert "/api/v1/users/profile" in rewrite
-        assert "Relevant Code Changes" in rewrite # Test new instruction
-        assert "--- a/api/routes.py" in rewrite # Test if diff is included
-        print("Test Passed.")
-    except Exception as e:
-        print(f"Test Failed: {e}")
+### Relevant Code Changes
+```diff
+diff --git a/backend/data/Knowledge_Base.md b/backend/data/Knowledge_Base.md
+index 36e9b76..2801bec 100644
+--- a/backend/data/Knowledge_Base.md
++++ b/backend/data/Knowledge_Base.md
+@@ -1,75 +1,3 @@
+-# Doc-Ops Agent
+-
+-This project provides an automated agent that monitors GitHub repositories for code changes. It analyzes these changes, retrieves relevant existing documentation, and either updates the documentation or creates new documentation if none exists. The agent then automatically creates a pull request with the generated documentation updates.
+-
+-## Purpose
+-
+-The primary goal of this project is to streamline and improve the documentation process for software projects. By automatically generating and updating documentation based on code changes, it aims to:
+-
+-*   **Keep documentation up-to-date:** Reduce the burden on developers to manually update documentation, ensuring it accurately reflects the current codebase.
+-*   **Improve documentation quality:** Leverage AI to generate clear, concise, and contextually relevant documentation.
+-*   **Enhance discoverability:** Make it easier for team members and contributors to find and understand project information.
+-*   **Automate repetitive tasks:** Free up developer time by handling the creation and updating of documentation automatically.
+-
+-## Core Technologies
+-
+-*   **Python:** The primary programming language for the backend application.
+-*   **FastAPI:** A modern, fast (high-performance) web framework for building APIs with Python. It's used here to create the webhook endpoint and the live log stream.
+-*   **LangChain:** An open-source framework for developing applications powered by language models. It's used for orchestrating the AI's analysis, retrieval, and generation capabilities.
+-*   **Hugging Face Transformers:** Used for local, efficient embedding generation (`all-MiniLM-L6-v2`).
+-*   **FAISS:** A library for efficient similarity search and clustering of dense vectors. Used here to store and retrieve documentation embeddings.
+-*   **GitHub API (PyGithub):** Used to interact with GitHub, specifically for fetching code diffs and creating pull requests.
+-*   **Requests:** A Python HTTP library, used for making direct API calls to GitHub for diffs.
+-*   **Uvicorn:** An ASGI server, used to run the FastAPI application.
+-*   **python-dotenv:** Used to load environment variables from a `.env` file.
+-*   **SSE-Starlette:** A library for Server-Sent Events, used to stream logs to the frontend in real-time.
+-
+-## How Components Work Together
+-
+-The system is designed around a central FastAPI application that listens for GitHub events and orchestrates the AI agent's workflow.
+-
+-1.  **GitHub Webhook (`/api/webhook/github`):**
+-    *   This endpoint receives `POST` requests from GitHub.
+-    *   It verifies the request's authenticity using a shared secret token (`GITHUB_SECRET_TOKEN`) and the `X-Hub-Signature-256` header.
+-    *   It specifically listens for `pull_request` events (when a PR is `closed` and `merged`) and `push` events.
+-    *   Upon receiving a relevant event, it extracts the code diff URL from the payload.
+-    *   It uses the `GITHUB_API_TOKEN` and the `requests` library to fetch the actual code diff content from GitHub.
+-    *   It then triggers the `agent_logic.run_agent_analysis` function asynchronously, passing the diff content and relevant metadata (like PR title, repo name, etc.).
+-
+-2.  **Agent Logic (`agent_logic.py`):**
+-    *   **`run_agent_analysis`:** This is the core of the agent.
+-        *   It first uses an `analyzer_chain` (powered by LangChain) to analyze the provided `git_diff`, determining if it's a functional change and summarizing it.
+-        *   If it's a functional change, it uses a `retriever` (powered by FAISS and HuggingFace embeddings) to search a vector store of existing documentation for relevant snippets based on the analysis summary.
+-        *   **Update Mode:** If relevant documentation is found and the confidence score is above a threshold, it uses a `rewriter_chain` to generate updated documentation based on the analysis and the retrieved snippets.
+-        *   **Create Mode:** If no relevant documentation is found, it uses a `creator_chain` to generate entirely new documentation based on the analysis and the diff.
+-        *   **Knowledge Base Update:** The newly generated documentation is appended to a central `Knowledge_Base.md` file.
+-        *   **Vector Store Re-indexing:** After updating the knowledge base, the `vector_store.create_vector_store()` function is called to rebuild the FAISS index, incorporating the new information. This makes the agent immediately "smarter" for subsequent runs.
+-        *   **Pull Request Creation:** Finally, it uses the `create_github_pr_async` function to create a new branch, stage the changes, and open a pull request on GitHub with the generated documentation.
+-
+-3.  **Vector Store (`vector_store.py`):**
+-    *   **`create_vector_store`:** This function is responsible for building the FAISS index.
+-        *   It first checks if the `Knowledge_Base.md` is empty and, if so, uses a `seeder_chain` to generate an initial summary of the project's source code to populate it.
+-        *   It loads all `.md` files from the `data/` directory.
+-        *   It uses `RecursiveCharacterTextSplitter` to break down the documents into manageable chunks.
+-        *   It generates embeddings for these chunks using a local `HuggingFaceEmbeddings` model.
+-        *   It creates a FAISS index from these embeddings and saves it locally to the `faiss_index/` directory.
+-    *   **`load_vector_store`:** Loads an existing FAISS index from disk.
+-    *   **`get_retriever`:** This is the primary function used by the agent logic. It attempts to load an existing index; if none is found, it triggers `create_vector_store`. It then returns a LangChain retriever object configured for similarity search with a score threshold.
+-
+-4.  **Live Logging (`/api/stream/logs`):**
+-    *   This endpoint uses Server-Sent Events (SSE) to stream log messages from the `log_queue` to any connected client (e.g., a frontend dashboard).
+-    *   The webhook handler and agent logic push log messages (categorized by event type like `log-step`, `log-error`, `log-action`) into this queue.
+-
+-5.  **Environment Variables:**
+-    *   `GITHUB_SECRET_TOKEN`: Used to verify incoming GitHub webhooks.
+-    *   `GITHUB_API_TOKEN`: Used by the agent to authenticate with the GitHub API for fetching diffs and creating pull requests.
+-
+-In essence, the system acts as an automated documentation assistant. It watches for code changes, uses AI to understand them and interact with existing knowledge, updates that knowledge, and then proposes the documentation changes back to the project via a pull request.
+++*   **Keep documentation up-to-date:** Reduce the burden on developers to manually update documentation, ensuring it accurately reflects the current codebase.
+++*   **Improve documentation quality:** Leverage AI to generate clear, concise, and contextually relevant documentation.
+++*   **Enhance discoverability:** Make it easier for team members and contributors to find and understand project information.
+++*   **Automate repetitive tasks:** Free up developer time by handling the creation and updating of documentation automatically.
+++
+++## Core Technologies
+++
+++*   **Python:** The primary programming language for the backend application.
+++*   **FastAPI:** A modern, fast (high-performance) web framework for building APIs with Python. It's used here to create the webhook endpoint and the live log stream.
+++*   **LangChain:** An open-source framework for developing applications powered by language models. It's used for orchestrating the AI's analysis, retrieval, and generation capabilities.
+++*   **Hugging Face Transformers:** Used for local, efficient embedding generation (`all-MiniLM-L6-v2`).
+++*   **FAISS:** A library for efficient similarity search and clustering of dense vectors. Used here to store and retrieve documentation embeddings.
+++*   **GitHub API (PyGithub):** Used to interact with GitHub, specifically for fetching code diffs and creating pull requests.
+++*   **Requests:** A Python HTTP library, used for making direct API calls to GitHub for diffs.
+++*   **Uvicorn:** An ASGI server, used to run the FastAPI application.
+++*   **python-dotenv:** Used to load environment variables from a `.env` file.
+++*   **SSE-Starlette:** A library for Server-Sent Events, used to stream logs to the frontend in real-time.
+++
+++## How Components Work Together
+++
+++The system is designed around a central FastAPI application that listens for GitHub events and orchestrates the AI agent's workflow.
+++
+++1.  **GitHub Webhook (`/api/webhook/github`):**
+++    *   This endpoint receives `POST` requests from GitHub.
+++    *   It verifies the request's authenticity using a shared secret token (`GITHUB_SECRET_TOKEN`) and the `X-Hub-Signature-256` header.
+++    *   It specifically listens for `pull_request` events (when a PR is `closed` and `merged`) and `push` events.
+++    *   Upon receiving a relevant event, it extracts the code diff URL from the payload.
+++    *   It uses the `GITHUB_API_TOKEN` and the `requests` library to fetch the actual code diff content from GitHub.
+++    *   It then triggers the `agent_logic.run_agent_analysis` function asynchronously, passing the diff content and relevant metadata (like PR title, repo name, etc.).
+++
+++ 2.  **Agent Logic (`agent_logic.py`):**
+++     *   **`run_agent_analysis`:** This is the core of the agent.
+++         *   It first uses an `analyzer_chain` (powered by LangChain) to analyze the provided `git_diff`, determining if it's a functional change and summarizing it.
+++         *   If it's a functional change, it uses a `retriever` (powered by FAISS and HuggingFace embeddings) to search a vector store of existing documentation for relevant snippets based on the analysis summary.
+++        *   **Update Mode:** If relevant documentation is found and the confidence score is above a configurable `CONFIDENCE_THRESHOLD` (defaults to 0.2), it uses a `rewriter_chain` to generate updated documentation based on the analysis and the retrieved snippets.
+++        *   **Create Mode:** If no relevant documentation is found, it uses a `creator_chain` to generate entirely new documentation based on the analysis and the diff.
+++        *   **Knowledge Base Update:** The newly generated documentation is appended to a central `Knowledge_Base.md` file.
+++        *   **Vector Store Re-indexing:** After updating the knowledge base, the `vector_store.create_vector_store()` function is called to rebuild the FAISS index, incorporating the new information. This makes the agent immediately "smarter" for subsequent runs.
+++        *   **Pull Request Creation:** Finally, it uses the `create_github_pr_async` function to create a new branch, stage the changes, and open a pull request on GitHub with the generated documentation.
+++
+++3.  **Vector Store (`vector_store.py`):**
+++    *   **`create_vector_store`:** This function is responsible for building the FAISS index.
+++        *   It first checks if the `Knowledge_Base.md` is empty and, if so, uses a `seeder_chain` to generate an initial summary of the project's source code to populate it.
+++        *   It loads all `.md` files from the `data/` directory.
+++        *   It uses `RecursiveCharacterTextSplitter` to break down the documents into manageable chunks.
+++        *   It generates embeddings for these chunks using a local `HuggingFaceEmbeddings` model.
+++        *   It creates a FAISS index from these embeddings and saves it locally to the `faiss_index/` directory.
+++    *   **`load_vector_store`:** Loads an existing FAISS index from disk.
+++    *   **`get_retriever`:** This is the primary function used by the agent logic. It attempts to load an existing index; if none is found, it triggers `create_vector_store`. It then returns a LangChain retriever object configured for similarity search with a score threshold.
+++
+++4.  **Live Logging (`/api/stream/logs`):**
+++    *   This endpoint uses Server-Sent Events (SSE) to stream log messages from the `log_queue` to any connected client (e.g., a frontend dashboard).
+++    *   The webhook handler and agent logic push log messages (categorized by event type like `log-step`, `log-error`, `log-action`) into this queue.
+++
+++5.  **Environment Variables:**
+++    *   `GITHUB_SECRET_TOKEN`: Used to verify incoming GitHub webhooks.
+++    *   `GITHUB_API_TOKEN`: Used by the agent to authenticate with the GitHub API for fetching diffs and creating pull requests.
+++
+++In essence, the system acts as an automated documentation assistant. It watches for code changes, uses AI to understand them and interact with existing knowledge, updates that knowledge, and then proposes the documentation changes back to the project via a pull request.
+++
+++---
+++
+++## Agent Logic (`agent_logic.py`)
+++
+++*   **`run_agent_analysis`:** This is the core of the agent.
+++    *   It first uses an `analyzer_chain` (powered by LangChain) to analyze the provided `git_diff`, determining if it's a functional change and summarizing it.
+++    *   If it's a functional change, it uses a `retriever` (powered by FAISS and HuggingFace embeddings) to search a vector store of existing documentation for relevant snippets based on the analysis summary.
+++    *   **Update Mode:** If relevant documentation is found and the confidence score is above a configurable `CONFIDENCE_THRESHOLD` (defaults to 0.2), it uses a `rewriter_chain` to generate updated documentation based on the analysis and the retrieved snippets.
+++    *   **Create Mode:** If no relevant documentation is found, it uses a `creator_chain` to generate entirely new documentation based on the analysis and the diff.
+++    *   **Knowledge Base Update:** The newly generated documentation is appended to a central `Knowledge_Base.md` file.
+++
+++---
+++
+++# Step 9: Log the final result
+++        if "Successfully" in result_message:
+++            # On success, log the specific format you requested.
+++            log_entry = (
+++                f"This is an AI-generated documentation update for PR #{pr_number}, "
+++                f"originally authored by @{user_name}.\n"
+++                f"Original PR: '{pr_title}' AI Analysis: {analysis_summary}"
+++            )
+++            logger.info(log_entry)
+++        else:
+++            # On failure, log a simpler error message for clarity.
+++            logger.error(
+++                f"AGENT FAILED for PR #{pr_number} ({repo_name}). Reason: {result_message}"
+++            )
+++
+++    except Exception as e:
+++        logger.error(f"Agent failed for PR #{pr_number} ({repo_name}) with error: {e}", exc_info=True)
+++        await broadcaster("log-error", f"Agent failed with error: {e}")
+++        return
+++
++```
