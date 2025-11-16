@@ -334,3 +334,4 @@ Traceback (most recent call last):
     """Synchronous file append operation."""
                                   ^^^^^^^^^^
 ValueError: too many values to unpack (expected 2)
+2025-11-16 11:00:53,817 - No relevant docs were retrieved using the relevance score threshold 0.3

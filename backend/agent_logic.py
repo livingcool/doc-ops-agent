@@ -9,7 +9,8 @@ from langchain_core.documents import Document
 from llm_clients import (
     get_analyzer_chain, 
     get_rewriter_chain, 
-    format_docs_for_context
+    format_docs_for_context,
+    get_creator_chain # <-- IMPORT THE NEW CHAIN
 )
 from vector_store import get_retriever, create_vector_store
 
@@ -22,10 +23,11 @@ try:
     retriever = get_retriever()
     analyzer_chain = get_analyzer_chain()
     rewriter_chain = get_rewriter_chain()
+    creator_chain = get_creator_chain() # <-- INITIALIZE THE NEW CHAIN
     print("✅ AI components are ready.")
 except Exception as e:
     print(f"🔥 FATAL ERROR: Failed to initialize AI components: {e}")
-    retriever, analyzer_chain, rewriter_chain = None, None, None
+    retriever, analyzer_chain, rewriter_chain, creator_chain = None, None, None, None
 
 # --- GitHub PR Creation Logic (Synchronous) ---
 def _create_github_pr_sync(logger, repo_name, pr_number, pr_title, pr_body, source_files, new_content):
@@ -179,52 +181,46 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
 
         await broadcaster("log-step", f"Found {len(retrieved_docs)} relevant doc snippets. Confidence: {confidence_percent}")
         
+        # --- THIS IS THE CORE LOGIC CHANGE ---
         if not retrieved_docs:
-            await broadcaster("log-skip", "No relevant docs found to update.")
-            return
-        
-        if confidence_score < 0.5: # Gatekeeping based on confidence
-            await broadcaster("log-skip", f"Confidence ({confidence_percent}) is below threshold. Skipping doc generation.")
-            return
-        old_docs_context = format_docs_for_context(retrieved_docs)
+            # --- CREATE MODE ---
+            await broadcaster("log-step", "No relevant docs found. Switching to 'Create Mode'...")
+            new_documentation = await creator_chain.ainvoke({
+                "analysis_summary": analysis_summary,
+                "git_diff": git_diff
+            })
+            # For creation, the source file is always the main knowledge base
+            source_files = [os.path.join('data', '@Knowledge_base.md')]
+        else:
+            # --- UPDATE MODE ---
+            if confidence_score < 0.5: # Gatekeeping based on confidence
+                await broadcaster("log-skip", f"Confidence ({confidence_percent}) is below threshold. Skipping doc update.")
+                return
 
-        # --- Step 4: Rewrite the docs ---
-        await broadcaster("log-step", "Generating new documentation with LLM...")
-        new_documentation = await rewriter_chain.ainvoke({
-            "analysis_summary": analysis_summary,
-            "old_docs_context": old_docs_context,
-            "git_diff": git_diff
-        })
+            await broadcaster("log-step", "Relevant docs found. Generating updates with LLM...")
+            old_docs_context = format_docs_for_context(retrieved_docs)
+            new_documentation = await rewriter_chain.ainvoke({
+                "analysis_summary": analysis_summary,
+                "old_docs_context": old_docs_context,
+                "git_diff": git_diff
+            })
+            # Get source files from the retrieved docs
+            raw_paths = list(set([doc.metadata.get('source') for doc in retrieved_docs]))
+            source_files = [path.replace("\\", "/") for path in raw_paths]
         
         await broadcaster("log-step", "✅ New documentation generated.")
         
-        # --- Step 5: Update the Knowledge Base ---
+        # --- Step 4: Update the Knowledge Base ---
         # The agent now "remembers" what it wrote by adding it to the central guide.
         await update_knowledge_base(logger, broadcaster, new_documentation)
 
-        # --- Step 6: Rebuild the vector store to include the new knowledge ---
+        # --- Step 5: Rebuild the vector store to include the new knowledge ---
         # This makes the agent immediately smarter for the next run.
         await broadcaster("log-step", "Re-indexing knowledge base with new information...")
         await asyncio.to_thread(create_vector_store)
         await broadcaster("log-step", "✅ Knowledge base is now up-to-date.")
 
         # --- Step 7: Package the results for the PR ---
-        
-        # Get the raw source paths from metadata
-        raw_paths = list(set([doc.metadata.get('source') for doc in retrieved_docs]))
-        source_files = []
-        for path in raw_paths:
-            # 1. Fix Windows slashes
-            fixed_path = path.replace("\\", "/") 
-            
-            # 2. Add the 'backend/' prefix (since docs are in 'backend/data/')
-            if not fixed_path.startswith("backend/"):
-                fixed_path = f"backend/{fixed_path}"
-                
-            source_files.append(fixed_path)
-        
-        print(f"Identified source files to update: {source_files}")
-
         
         pr_data = {
             "new_content": new_documentation,

@@ -108,6 +108,48 @@ def get_rewriter_chain():
     
     return rewriter_chain
 
+# --- 3. The "Creator" Chain (NEW) ---
+
+def get_creator_chain():
+    """
+    Returns a chain that creates a NEW documentation section from scratch
+    when no existing documentation is found.
+    """
+    system_prompt = """
+    You are an expert technical writer tasked with creating a new documentation
+    section for a feature that has no prior documentation.
+
+    You will be given:
+    1. A 'git diff' of the new code.
+    2. An AI-generated analysis of what changed.
+
+    Your job is to write a clear, concise documentation section explaining the new
+    feature. The output should be ready to be added to a larger document.
+    - Use Markdown formatting.
+    - Explain the feature's purpose and how it works based on the code.
+    - Do not add commentary like "Here is the new documentation:".
+    """
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", """
+        Here is the context for the new feature:
+        
+        ANALYSIS OF CHANGE:
+        {analysis_summary}
+        
+        CODE CHANGE (GIT DIFF):
+        ```diff
+        {git_diff}
+        ```
+        
+        Please write a new documentation section for this feature:
+        """)
+    ])
+    
+    creator_chain = prompt | llm | StrOutputParser()
+    return creator_chain
+
 # --- Helper Function to format docs ---
 def format_docs_for_context(docs: list[Document]) -> str:
     """Converts a list of LangChain Documents into a single string."""
