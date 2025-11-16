@@ -168,12 +168,16 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
 
         # --- Step 3: Retrieve relevant old docs ---
         await broadcaster("log-step", "Functional change. Searching for relevant docs...")
-        # Use `aget_relevant_documents` which returns scores with FAISS
-        retrieved_docs = await retriever.aget_relevant_documents(analysis_summary)
         
-        # --- THIS IS THE FIX ---
-        # The score is in the metadata when using FAISS with similarity_score_threshold
-        scores = [doc.metadata.get('score', 0.0) for doc in retrieved_docs]
+        # --- THIS IS THE FIX: Perform a direct similarity search to guarantee scores ---
+        # The 'mmr' retriever is good for diversity but hides scores.
+        # We use the vectorstore directly to get scores for confidence checking.
+        docs_with_scores = await retriever.vectorstore.asimilarity_search_with_relevance_scores(
+            analysis_summary, k=5
+        )
+        
+        retrieved_docs = [doc for doc, score in docs_with_scores]
+        scores = [score for doc, score in docs_with_scores]
         
         # Calculate confidence score (highest similarity)
         confidence_score = max(scores) if scores else 0.0
