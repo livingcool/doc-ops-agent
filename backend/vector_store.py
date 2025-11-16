@@ -154,6 +154,38 @@ def load_vector_store():
         print(f"Error loading index. Did you create it first? {e}")
         return None
 
+def add_docs_to_store(new_docs: list):
+    """
+    Incrementally adds new documents to the existing vector store.
+    """
+    print(f"Incrementally adding {len(new_docs)} new documents to the vector store...")
+    db = load_vector_store()
+    if db is None:
+        print("Warning: No vector store found to add to. Triggering a full rebuild.")
+        create_vector_store()
+        return
+
+    try:
+        # Split the new documents into chunks
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,
+            chunk_overlap=100
+        )
+        docs_to_add = text_splitter.split_documents(new_docs)
+        
+        # Add the new chunks to the existing FAISS index
+        db.add_documents(docs_to_add)
+        
+        # Save the updated index back to disk
+        db.save_local(INDEX_PATH)
+        print("✅ Successfully added new documents and saved the updated index.")
+        
+        # Update the global retriever with the new db state
+        global retriever
+        retriever = db.as_retriever(search_type="mmr", search_kwargs={'k': 5, 'fetch_k': 20})
+    except Exception as e:
+        print(f"🔥 Error adding documents to vector store: {e}")
+
 # --- Main Retriever Function ---
 
 def get_retriever():

@@ -12,7 +12,7 @@ from llm_clients import (
     format_docs_for_context,
     get_creator_chain # <-- IMPORT THE NEW CHAIN
 )
-from vector_store import get_retriever, create_vector_store
+from vector_store import get_retriever, add_docs_to_store
 
 # --- Load GitHub Token ---
 GITHUB_API_TOKEN = os.getenv("GITHUB_API_TOKEN")
@@ -213,14 +213,15 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
         
         await broadcaster("log-step", "✅ New documentation generated.")
         
-        # --- Step 4: Update the Knowledge Base ---
+        # --- Step 4: Update the Knowledge Base File ---
         # The agent now "remembers" what it wrote by adding it to the central guide.
         await update_knowledge_base(logger, broadcaster, new_documentation)
 
-        # --- Step 5: Rebuild the vector store to include the new knowledge ---
-        # This makes the agent immediately smarter for the next run.
-        await broadcaster("log-step", "Re-indexing knowledge base with new information...")
-        await asyncio.to_thread(create_vector_store)
+        # --- Step 5: Incrementally update the vector store (More Efficient) ---
+        # Instead of rebuilding, we add the new doc directly to the index.
+        await broadcaster("log-step", "Incrementally updating vector store with new knowledge...")
+        new_doc = Document(page_content=new_documentation, metadata={"source": os.path.join('data', 'Knowledge_Base.md')})
+        await asyncio.to_thread(add_docs_to_store, [new_doc])
         await broadcaster("log-step", "✅ Knowledge base is now up-to-date.")
 
         # --- Step 7: Package the results for the PR ---
