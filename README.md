@@ -6,9 +6,9 @@ Welcome to DocSmith! This guide provides all the necessary steps to set up, conf
 
 DocSmith listens for merged pull requests in a GitHub repository. When a PR is merged, it triggers the following workflow:
 
-1.  **Analyzes the code diff** using an AI model (Google Gemini).
+1.  **Analyzes the code diff** of pushes and merged pull requests using an AI model (Google Gemini).
 2.  **Determines if the change is significant** enough to warrant a documentation update.
-3.  **Retrieves relevant existing documentation** snippets from a vector store.
+3.  **Retrieves relevant existing documentation** snippets from a vector store (FAISS).
 4.  **Generates new or updated documentation** based on the analysis and retrieved snippets.
 5.  **Creates a new pull request** with the documentation changes.
 
@@ -78,14 +78,15 @@ The backend is a Python FastAPI application.
     Open the `.env` file and add the following variables. See the next section for instructions on how to get these values.
 
     ```env
-    # Your secret phrase for verifying GitHub webhooks
+    # A secret phrase you create for verifying GitHub webhooks.
+    # This MUST EXACTLY match the secret in your GitHub webhook settings.
     GITHUB_SECRET_TOKEN="your_strong_secret_here"
 
     # Your GitHub Personal Access Token for API actions
     GITHUB_API_TOKEN="ghp_YourGitHubTokenHere"
 
-    # Your OpenAI API key
-    OPENAI_API_KEY="sk-YourOpenAIKeyHere"
+    # Your Google AI API key for Gemini
+    GOOGLE_API_KEY="YourGoogleAIStudioAPIKeyHere"
     ```
 
 ### Step 3: Frontend Setup
@@ -111,7 +112,7 @@ The agent needs this token to create branches and pull requests on your behalf.
 1.  Go to **GitHub Settings** > **Developer settings** > **Personal access tokens** > **Tokens (classic)**.
 2.  Click **Generate new token** (or **Generate new token (classic)**).
 3.  Give it a descriptive name (e.g., "Doc-Ops Agent").
-4.  Set the **Expiration** as needed (e.g., 90 days).
+4.  Set the **Expiration** as needed (e.g., 90 days). For production, consider a fine-grained token.
 5.  Select the following **scopes**:
     *   `repo` (Full control of private repositories)
 6.  Click **Generate token** and copy the token. **You will not see it again.**
@@ -120,11 +121,11 @@ The agent needs this token to create branches and pull requests on your behalf.
 
 This is a secret phrase you create. It should be a long, random string. You will use this same secret when setting up the webhook in your GitHub repository.
 
-#### OpenAI API Key (`OPENAI_API_KEY`)
+#### Google AI API Key (`GOOGLE_API_KEY`)
 
-1.  Log in to your OpenAI Platform account.
-2.  Go to the **API Keys** section.
-3.  Click **Create new secret key**, give it a name, and copy the key.
+1.  Go to **Google AI Studio**.
+2.  Log in and click **"Get API key"** > **"Create API key in new project"**.
+3.  Copy the generated key.
 
 ## 6. Running the Project
 
@@ -172,8 +173,7 @@ Now, you need to tell GitHub where to send events. This should be done on the re
 5.  **Secret**: Paste the same secret you used for `GITHUB_SECRET_TOKEN` in your `.env` file.
 6.  **Which events would you like to trigger this webhook?**:
     *   Select **Let me select individual events.**
-    *   Uncheck `Pushes`.
-    *   Check `Pull requests`.
+    *   Ensure both `Pushes` and `Pull requests` are checked.
 7.  Ensure **Active** is checked and click **Add webhook**.
 
 ## 8. How to Use the Agent
