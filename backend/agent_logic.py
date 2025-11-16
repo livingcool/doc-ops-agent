@@ -116,7 +116,7 @@ async def create_github_pr_async(*args, **kwargs):
 # --- NEW: Knowledge Base Update Logic ---
 async def update_knowledge_base(logger, broadcaster, new_documentation: str):
     """Appends the newly generated documentation to the central knowledge base."""
-    knowledge_base_path = os.path.join(os.path.dirname(__file__), 'data', '@Knowledge_base.md')
+    knowledge_base_path = os.path.join(os.path.dirname(__file__), 'data', 'Knowledge_Base.md')
     
     try:
         await broadcaster("log-step", "Updating central knowledge base...")
@@ -190,7 +190,7 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
                 "git_diff": git_diff
             })
             # For creation, the source file is always the main knowledge base
-            source_files = [os.path.join('data', '@Knowledge_base.md')]
+            source_files = [os.path.join('data', 'Knowledge_Base.md')]
         else:
             # --- UPDATE MODE ---
             if confidence_score < 0.5: # Gatekeeping based on confidence

@@ -22,7 +22,7 @@ def _seed_initial_knowledge():
     If the main knowledge base is empty, this function populates it with an
     auto-generated summary of the project's source code.
     """
-    knowledge_base_path = os.path.join(DATA_PATH, "@Knowledge_base.md")
+    knowledge_base_path = os.path.join(DATA_PATH, "Knowledge_Base.md")
     
     # Check if the guide is empty or just has placeholder content
     if os.path.exists(knowledge_base_path) and os.path.getsize(knowledge_base_path) > 100:
