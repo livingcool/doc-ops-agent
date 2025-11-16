@@ -162,13 +162,13 @@ def get_summarizer_chain():
     Based on the provided analysis and git diff, produce a single sentence that
     describes the change and its impact.
 
-    Your response MUST be a single sentence in this exact format:
+    Your response MUST be a single sentence that follows the format:
     "A push by {user_name} to the file `<file_name>` has <impact_description>."
 
+    - You must determine the most relevant `<file_name>` from the git diff.
+    - You must write the `<impact_description>` based on the AI analysis.
     - Keep the `impact_description` brief and high-level.
-    - Do not include "from this to that".
-    - Do not include line numbers.
-    - If multiple files are changed, pick the most important one.
+    - Do not include "from this to that" or line numbers.
     """
     
     prompt = ChatPromptTemplate.from_messages([
