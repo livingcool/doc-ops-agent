@@ -1,23 +1,22 @@
-# Doc-Ops Agent: User & Setup Guide
+# DocSmith: User & Setup Guide
 
-Welcome to the Doc-Ops Agent! This guide provides all the necessary steps to set up, configure, and run this project. This agent is an AI-powered tool that automatically generates documentation for your code changes and creates pull requests with the updates.
+Welcome to DocSmith! This guide provides all the necessary steps to set up, configure, and run this project. DocSmith is an AI-powered tool that automatically generates documentation for your code changes and creates pull requests with the updates.
 
 ## 1. Overview
 
-The Doc-Ops Agent listens for merged pull requests in a GitHub repository. When a PR is merged, it triggers the following workflow:
+DocSmith listens for merged pull requests in a GitHub repository. When a PR is merged, it triggers the following workflow:
 
-1.  **Analyzes the code diff** using an AI model (OpenAI).
+1.  **Analyzes the code diff** using an AI model (Google Gemini).
 2.  **Determines if the change is significant** enough to warrant a documentation update.
-3.  **Searches for relevant existing documentation** in the codebase using a vector store (FAISS).
-4.  **Generates new, updated documentation** based on the code changes and the old docs.
-5.  **Creates a new pull request** in the repository with the AI-generated documentation.
+3.  **Retrieves relevant existing documentation** snippets from a vector store.
+4.  **Generates new or updated documentation** based on the analysis and retrieved snippets.
+5.  **Creates a new pull request** with the documentation changes.
 
 ## 2. Core Technologies
 
-*   **Backend**: Python, FastAPI, LangChain, PyGithub, Gemini api
-*   **Frontend**: React, Server-Sent Events (SSE) for live logging, Vercel
+*   **Backend**: Python, FastAPI, LangChain, Google Gemini, PyGithub
+*   **Frontend**: React, Server-Sent Events (SSE) for live logging
 *   **Vector Store**: FAISS for efficient similarity search
-*   **Deployment** : Render
 
 ## 3. Prerequisites
 
@@ -27,7 +26,7 @@ Before you begin, ensure you have the following installed and configured:
 -   **Node.js and npm**: [Download Node.js](https://nodejs.org/en/download/)
 -   **Git**: [Download Git](https://git-scm.com/downloads/)
 -   **GitHub Account**: You will need a personal GitHub account.
--   **OpenAI API Key**: You need an API key from OpenAI to power the AI analysis. [Get an API Key](https://platform.openai.com/api-keys).
+-   **Google AI API Key**: You need an API key for the Gemini API to power the AI analysis. [Get an API Key](https://ai.google.dev/gemini-api/docs/api-key).
 -   **ngrok**: A tool to expose your local server to the internet so GitHub's webhooks can reach it. [Download ngrok](https://ngrok.com/download).
 
 ## 4. Setup and Installation
@@ -191,5 +190,3 @@ Your setup is complete! Now you can test the agent's workflow.
 ---
 
 You are now ready to use the Doc-Ops Agent like a pro! If you encounter any issues, check the terminal output for errors in the backend, frontend, and ngrok consoles.
-
-
