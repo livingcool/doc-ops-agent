@@ -15,9 +15,9 @@ The Doc-Ops Agent listens for merged pull requests in a GitHub repository. When 
 ## 2. Core Technologies
 
 *   **Backend**: Python, FastAPI, LangChain, PyGithub, Gemini api
-*   **Frontend**: React, Server-Sent Events (SSE) for live logging
+*   **Frontend**: React, Server-Sent Events (SSE) for live logging, Vercel
 *   **Vector Store**: FAISS for efficient similarity search
-*   **Ddeployment** : Render
+*   **Deployment** : Render
 
 ## 3. Prerequisites
 
@@ -191,4 +191,5 @@ Your setup is complete! Now you can test the agent's workflow.
 ---
 
 You are now ready to use the Doc-Ops Agent like a pro! If you encounter any issues, check the terminal output for errors in the backend, frontend, and ngrok consoles.
+
 
