@@ -2,6 +2,7 @@ import os
 import hmac
 import hashlib
 import asyncio
+import json
 import logging
 import requests # <--- IMPORTED
 from dotenv import load_dotenv
@@ -70,10 +71,15 @@ async def stream_logs(request: Request):
 @app.post("/api/webhook/github")
 async def handle_github_webhook(
     request: Request, 
-    x_github_event: str = Header(None), 
-    x_hub_signature_256: str = Header(None)):
+    x_github_event: str = Header(None),
+    x_hub_signature_256: str = Header(None),
+    content_type: str = Header(None),
+):
     raw_body = await request.body()
     
+    if content_type != "application/json":
+        raise HTTPException(status_code=415, detail="Unsupported Media Type: Expected application/json")
+
     if not GITHUB_SECRET_TOKEN:
         print("ERROR: GITHUB_SECRET_TOKEN is not configured on the server.")
         raise HTTPException(status_code=500, detail="Internal server error: Webhook secret not set.")
@@ -92,7 +98,13 @@ async def handle_github_webhook(
         print("ERROR: Webhook signature mismatch.")
         raise HTTPException(status_code=403, detail="Invalid webhook signature.")
 
-    payload = await request.json()
+    # FIX: Parse the raw body that was already read, instead of reading the stream again.
+    try:
+        payload = json.loads(raw_body)
+    except json.JSONDecodeError:
+        print("ERROR: Failed to decode JSON from webhook payload.")
+        raise HTTPException(status_code=400, detail="Invalid JSON payload.")
+
 
     # --- Logic to handle MERGED PULL REQUEST events ---
     if x_github_event == "pull_request" and payload.get("action") == "closed" and payload.get("pull_request", {}).get("merged"):
