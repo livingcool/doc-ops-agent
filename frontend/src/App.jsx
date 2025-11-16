@@ -11,7 +11,8 @@ import { LogIcon } from './components/LogIcon.jsx';
 
 import './App.css'; // Your component styles
 
-const BACKEND_STREAM_URL = "http://localhost:8000/api/stream/logs";
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+const BACKEND_STREAM_URL = `${BACKEND_URL}/api/stream/logs`;
 
 export default function App() {
   const { logs, status } = useEventSource(BACKEND_STREAM_URL);
@@ -27,7 +28,7 @@ export default function App() {
       >
         <LogIcon type="log-error" />
         <div className="log-message">
-          Could not connect to backend at <code>{BACKEND_STREAM_URL}</code>.
+          Could not connect to backend at <code>{BACKEND_URL}</code>.
           Is the FastAPI server running on port 8000?
         </div>
       </motion.div>

@@ -212,3 +212,22 @@ To deploy the backend to a persistent cloud service like Render, follow these st
 5.  **Update Your Webhook**: Once deployed, Render will provide a public URL (e.g., `https://your-app-name.onrender.com`). Update your GitHub webhook's **Payload URL** to point to this new URL (e.g., `https://your-app-name.onrender.com/api/webhook/github`).
 
 Your agent is now live and will run automatically in the cloud!
+
+## 10. Deployment (Frontend to Vercel)
+
+To deploy the frontend dashboard to a world-class hosting platform like Vercel, follow these steps.
+
+1.  **Sign up for Vercel**: Use your GitHub account to sign up for a free account on [Vercel](https://vercel.com).
+2.  **Import Project**: From your Vercel dashboard, click "Add New..." > "Project" and import your `doc-ops-agent` GitHub repository.
+3.  **Configure Project**:
+    *   Vercel will automatically detect that it's a Create React App.
+    *   Expand the "Root Directory" section and select the `frontend` directory. Vercel will now know to run all build commands from there.
+4.  **Configure Environment Variables**:
+    *   This is the most important step. Expand the "Environment Variables" section.
+    *   Add a new variable with the name `REACT_APP_BACKEND_URL`.
+    *   For the value, paste the public URL of your **backend service** that you deployed on Render (e.g., `https://your-app-name.onrender.com`). **Do not** include a trailing slash or any path.
+5.  **Deploy**: Click the "Deploy" button. Vercel will build and deploy your React application, giving you a public URL for your dashboard.
+
+---
+
+You now have a complete, production-ready setup with a backend running on Render and a frontend on Vercel!
