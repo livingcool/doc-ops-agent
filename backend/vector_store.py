@@ -173,7 +173,7 @@ def get_retriever():
     # This is what our agent will use to find relevant docs
     return db.as_retriever(
         search_type="similarity_score_threshold",
-        search_kwargs={"k": 3, "score_threshold": 0.3, "return_scores": True}
+        search_kwargs={"k": 3, "score_threshold": 0.3}
     )
 
 
