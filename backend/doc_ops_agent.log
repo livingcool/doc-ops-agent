@@ -1892,3 +1892,7 @@ Original PR: 'Push to main: Change the name of the application' AI Analysis: Fun
 2025-11-16 17:31:45,386 - Successfully updated file: backend/data/Knowledge_Base.md
 2025-11-16 17:31:47,880 - This is an AI-generated documentation update for PR #d459d92, originally authored by @livingcool.
 Original PR: 'Push to main: vercel deployed' AI Analysis: Functional change: Updated the project name from 'Doc-Ops Agent' to 'DocSmith' across documentation and frontend components, and switched the AI model from OpenAI to Google Gemini.
+2025-11-16 17:40:10,115 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 17:40:36,550 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 17:40:38,664 - This is an AI-generated documentation update for PR #c85e0b5, originally authored by @livingcool.
+Original PR: 'Push to main: changed the backend url' AI Analysis: Functional change: Updated the project name from 'Doc-Ops Agent' to 'DocSmith' across documentation and frontend components, and switched the AI model from OpenAI to Google Gemini.

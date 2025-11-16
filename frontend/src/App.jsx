@@ -11,7 +11,7 @@ import { LogIcon } from './components/LogIcon.jsx';
 
 import './App.css'; // Your component styles
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "docsmith-your-logger.vercel.app";
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
 const BACKEND_STREAM_URL = `${BACKEND_URL}/api/stream/logs`;
 
 export default function App() {
