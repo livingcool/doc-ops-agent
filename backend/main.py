@@ -48,6 +48,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- Health Check Endpoint ---
+@app.get("/api/health")
+async def health_check():
+    return {"status": "ok", "message": "Doc-Ops Agent is healthy"}
+
 # --- 1. The "Live Feed" Endpoint (for React) ---
 @app.get("/api/stream/logs")
 async def stream_logs(request: Request):
@@ -70,11 +75,11 @@ async def handle_github_webhook(
     raw_body = await request.body()
     
     if not GITHUB_SECRET_TOKEN:
-        print("ERROR: GITHUB_SECRET_TOKEN is not set!")
-        raise HTTPException(status_code=500, detail="Server configuration error")
+        print("ERROR: GITHUB_SECRET_TOKEN is not configured on the server.")
+        raise HTTPException(status_code=500, detail="Internal server error: Webhook secret not set.")
         
     if not x_hub_signature_256:
-        raise HTTPException(status_code=403, detail="Signature missing")
+        raise HTTPException(status_code=403, detail="X-Hub-Signature-256 header is missing.")
 
     hash_object = hmac.new(
         GITHUB_SECRET_TOKEN.encode('utf-8'),
@@ -84,8 +89,8 @@ async def handle_github_webhook(
     expected_signature = "sha256=" + hash_object.hexdigest()
 
     if not hmac.compare_digest(expected_signature, x_hub_signature_256):
-        print("ERROR: Invalid webhook signature")
-        raise HTTPException(status_code=403, detail="Invalid signature")
+        print("ERROR: Webhook signature mismatch.")
+        raise HTTPException(status_code=403, detail="Invalid webhook signature.")
 
     payload = await request.json()
 
@@ -192,5 +197,6 @@ async def root():
 if __name__ == "__main__":
     import uvicorn
     print("--- Starting Doc-Ops Agent Backend ---")
+    print("Listening for GitHub webhooks for 'pull_request' (merged) and 'push' events.")
     print("--- AI Models are warming up... ---")
     uvicorn.run(app, host="0.0.0.0", port=8000)

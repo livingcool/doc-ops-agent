@@ -112,7 +112,7 @@ async def create_github_pr_async(*args, **kwargs):
 
 # --- Updated Core Agent Logic ---
 
-async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, repo_name: str, pr_number: int, user_name: str):
+async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, repo_name: str, pr_number: str, user_name: str):
     """This is the main 'brain' of the agent. It runs the full analysis-retrieval-rewrite pipeline."""
     
     if not retriever:

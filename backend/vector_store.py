@@ -37,23 +37,11 @@ def create_vector_store():
     
     try:
         documents = loader.load()
-        if not documents:
-            print(f"Error: No .md documents found in '{DATA_PATH}'.")
-            print("Please add your documentation files to the 'backend/data' folder.")
-            return None
     except Exception as e:
         print(f"Error loading documents: {e}")
         return None
 
-    # 2. Split the documents into smaller, searchable chunks
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=100
-    )
-    docs = text_splitter.split_documents(documents)
-    print(f"Loaded and split {len(documents)} documents into {len(docs)} chunks.")
-
-    # 3. Create embeddings (using local model)
+    # 2. Create embeddings (using local model)
     print("Loading local embedding model... (This may download ~500MB on first run)")
     try:
         embeddings = HuggingFaceEmbeddings(
@@ -64,6 +52,23 @@ def create_vector_store():
     except Exception as e:
         print(f"Error initializing local embedding model: {e}")
         return None
+
+    # If no documents are found, create an empty index and save it.
+    if not documents:
+        print(f"Warning: No .md documents found in '{DATA_PATH}'. Creating an empty index.")
+        print("The agent will run, but won't find docs until you add them and restart.")
+        empty_faiss = FAISS.from_texts(["placeholder"], embeddings)
+        empty_faiss.delete([empty_faiss.index_to_docstore_id[0]])
+        empty_faiss.save_local(INDEX_PATH)
+        return empty_faiss
+
+    # 2. Split the documents into smaller, searchable chunks
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,
+        chunk_overlap=100
+    )
+    docs = text_splitter.split_documents(documents)
+    print(f"Loaded and split {len(documents)} documents into {len(docs)} chunks.")
 
     # 4. Create FAISS index from documents and embeddings
     print("Creating FAISS index... This may take a moment.")
