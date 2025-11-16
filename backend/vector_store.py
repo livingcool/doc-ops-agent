@@ -114,7 +114,9 @@ def create_vector_store():
     # 4. Create FAISS index from documents and embeddings
     print("Creating FAISS index... This may take a moment.")
     try:
-        db = FAISS.from_documents(docs, embeddings)
+        # --- THIS IS THE FIX ---
+        # Use the COSINE distance strategy, which is what the retriever expects and works correctly with the embedding model.
+        db = FAISS.from_documents(docs, embeddings, distance_strategy="COSINE")
         
         # 5. Save the index locally
         db.save_local(INDEX_PATH)
@@ -171,9 +173,12 @@ def get_retriever():
 
     # Convert the vector store into a retriever
     # This is what our agent will use to find relevant docs
+    # --- THIS IS THE FIX ---
+    # Switch to 'mmr' (Maximal Marginal Relevance) search type. It's more robust,
+    # works correctly with COSINE distance, and provides more diverse results.
     return db.as_retriever(
-        search_type="similarity_score_threshold",
-        search_kwargs={"k": 3, "score_threshold": 0.3}
+        search_type="mmr",
+        search_kwargs={'k': 5, 'fetch_k': 20}
     )
 
 
@@ -224,7 +229,7 @@ if __name__ == "__main__":
     if retriever:
         print("\n--- Testing Retriever ---")
         try:
-            test_query = "What does the fox do?"
+            test_query = "What does this project do ?"
             results = retriever.invoke(test_query)
             print(f"Query: '{test_query}'")
             print(f"Results: ({len(results)} found)")

@@ -150,6 +150,44 @@ def get_creator_chain():
     creator_chain = prompt | llm | StrOutputParser()
     return creator_chain
 
+# --- 4. The "Seeder" Chain (NEW) ---
+
+def get_seeder_chain():
+    """
+    Returns a chain that creates an initial project overview from source code
+    to seed the knowledge base.
+    """
+    system_prompt = """
+    You are an expert technical writer tasked with creating a high-level project overview
+    to serve as the initial knowledge base for a software project.
+
+    You will be given the concatenated source code of the project's key files.
+
+    Your job is to write a "README" style document that explains:
+    1.  What the project is and its main purpose.
+    2.  The core technologies used.
+    3.  A brief explanation of how the main components (e.g., main.py, agent_logic.py) work together.
+
+    The output should be in Markdown format and serve as a good starting point for project documentation.
+    Do not add commentary like "Here is the new documentation:".
+    """
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", """
+        Here is the source code of the project:
+        
+        ```python
+        {source_code}
+        ```
+        
+        Please generate the initial project documentation based on this code.
+        """)
+    ])
+    
+    seeder_chain = prompt | llm | StrOutputParser()
+    return seeder_chain
+
 # --- Helper Function to format docs ---
 def format_docs_for_context(docs: list[Document]) -> str:
     """Converts a list of LangChain Documents into a single string."""
