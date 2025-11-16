@@ -130,7 +130,10 @@ def get_retriever():
 
     # Convert the vector store into a retriever
     # This is what our agent will use to find relevant docs
-    return db.as_retriever(search_kwargs={"k": 3}) # Returns top 3 results
+    return db.as_retriever(
+        search_type="similarity_score_threshold",
+        search_kwargs={"k": 3, "score_threshold": 0.3, "return_scores": True}
+    )
 
 
 # --- Self-Test ---

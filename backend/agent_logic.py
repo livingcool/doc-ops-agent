@@ -134,13 +134,26 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
 
         # --- Step 3: Retrieve relevant old docs ---
         await broadcaster("log-step", "Functional change. Searching for relevant docs...")
-        retrieved_docs = await retriever.ainvoke(analysis_summary)
-        await broadcaster("log-step", f"Found {len(retrieved_docs)} relevant doc snippets.")
+        # Use `aget_relevant_documents` which returns scores with FAISS
+        retrieved_docs_with_scores = await retriever.aget_relevant_documents(analysis_summary, return_scores=True)
+        
+        # Separate docs from scores
+        retrieved_docs = [doc for doc, score in retrieved_docs_with_scores]
+        scores = [score for doc, score in retrieved_docs_with_scores]
+        
+        # Calculate confidence score (highest similarity)
+        confidence_score = max(scores) if scores else 0.0
+        confidence_percent = f"{confidence_score * 100:.1f}%"
+
+        await broadcaster("log-step", f"Found {len(retrieved_docs)} relevant doc snippets. Confidence: {confidence_percent}")
         
         if not retrieved_docs:
             await broadcaster("log-skip", "No relevant docs found to update.")
             return
-
+        
+        if confidence_score < 0.5: # Gatekeeping based on confidence
+            await broadcaster("log-skip", f"Confidence ({confidence_percent}) is below threshold. Skipping doc generation.")
+            return
         old_docs_context = format_docs_for_context(retrieved_docs)
 
         # --- Step 4: Rewrite the docs ---
@@ -177,7 +190,7 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
             "new_content": new_documentation,
             "source_files": source_files,
             "pr_title": f"docs: AI update for '{pr_title}' (PR #{pr_number})",
-            "pr_body": f"This is an AI-generated documentation update for PR #{pr_number}, originally authored by **@{user_name}**.\n\n**Original PR:** '{pr_title}'\n**AI Analysis:** {analysis_summary}"
+            "pr_body": f"This is an AI-generated documentation update for PR #{pr_number}, originally authored by **@{user_name}**.\n\n**Confidence Score:** {confidence_percent}\n\n**Original PR:** '{pr_title}'\n**AI Analysis:** {analysis_summary}"
         }
 
         # --- Step 6: Create the GitHub PR ---
