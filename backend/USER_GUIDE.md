@@ -86,6 +86,9 @@ The backend is a Python FastAPI application.
 
     # Your OpenAI API key
     OPENAI_API_KEY="sk-YourOpenAIKeyHere"
+
+    # (Optional) The minimum confidence score required to update a document
+    CONFIDENCE_THRESHOLD=0.2
     ```
 
 ### Step 3: Frontend Setup
@@ -203,7 +206,7 @@ To deploy the backend to a persistent cloud service like Render, follow these st
     *   **Build Command**: `pip install -r requirements.txt`
         *   This is usually the default and is correct.
     *   **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 10000`
-        *   Use `10000` for the port as recommended by Render.
+        *   Use the port recommended by Render (e.g., `10000`).
 3.  **Add Environment Variables**: Go to the **Environment** tab for your new service and add the same `GITHUB_SECRET_TOKEN`, `GITHUB_API_TOKEN`, and `OPENAI_API_KEY` that you have in your local `.env` file.
 4.  **Deploy**: Trigger a manual deploy.
 5.  **Update Your Webhook**: Once deployed, Render will provide a public URL (e.g., `https://your-app-name.onrender.com`). Update your GitHub webhook's **Payload URL** to point to this new URL (e.g., `https://your-app-name.onrender.com/api/webhook/github`).
