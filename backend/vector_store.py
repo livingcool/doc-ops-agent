@@ -139,24 +139,44 @@ def get_retriever():
 # --- Self-Test ---
 if __name__ == "__main__":
     """
-    This allows you to run this file directly to test it.
+    This allows you to run this file directly to create, test, or rebuild the index.
     
-    1. Add a file named 'test.md' to the 'backend/data/' folder.
-       Put some text in it like "The quick brown fox jumps over the lazy dog."
-    2. Make sure you have run 'pip install -r requirements.txt'
-    3. Run this command from the 'backend' directory:
-       python vector_store.py
+    Usage:
+    - To create/test the index:
+      python vector_store.py
     
-    It should create the index. Run it a second time to see it load the index.
+    - To force a rebuild of the index (deletes the old one):
+      python vector_store.py --rebuild
     """
+    import sys
+    import shutil
     
     print("--- Running Vector Store Self-Test ---")
+
+    # --- ADDED: Command-line flag to force a rebuild ---
+    if len(sys.argv) > 1 and sys.argv[1] == '--rebuild':
+        if os.path.exists(INDEX_PATH):
+            print(f"Found '--rebuild' flag. Deleting old index at '{INDEX_PATH}'...")
+            try:
+                shutil.rmtree(INDEX_PATH)
+                print("Old index deleted successfully.")
+            except Exception as e:
+                print(f"Error deleting index directory: {e}")
+                sys.exit(1)
+        else:
+            print(f"Found '--rebuild' flag, but no index exists at '{INDEX_PATH}'. Proceeding to create a new one.")
+    # --- END OF ADDITION ---
     
     # Ensure data directory exists
     if not os.path.exists(DATA_PATH):
         os.makedirs(DATA_PATH)
         print(f"Created '{DATA_PATH}' directory.")
         print("Please add your .md documentation files to this folder.")
+
+    # Add a dummy file if the data directory is empty to aid first-time users
+    if not os.listdir(DATA_PATH):
+        print(f"Warning: The '{DATA_PATH}' directory is empty.")
+        print("Please add your project's documentation (.md files) here for the agent to work correctly.")
         
     retriever = get_retriever()
     
