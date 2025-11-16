@@ -1,16 +1,17 @@
 # DocSmith: User & Setup Guide
 
-Welcome to DocSmith! This guide provides all the necessary steps to set up, configure, and run this project. DocSmith is an AI-powered tool that automatically generates documentation for your code changes and creates pull requests with the updates.
+Welcome to DocSmith! This guide provides all the necessary steps to set up, configure, and run the project. DocSmith is an AI-powered agent that automatically generates documentation for your code changes and creates pull requests with the updates.
 
 ## 1. Overview
 
-DocSmith listens for merged pull requests in a GitHub repository. When a PR is merged, it triggers the following workflow:
+DocSmith listens for `push` and merged `pull_request` events in a GitHub repository. When triggered, it performs the following workflow:
 
 1.  **Analyzes the code diff** of pushes and merged pull requests using an AI model (Google Gemini).
 2.  **Determines if the change is significant** enough to warrant a documentation update.
-3.  **Retrieves relevant existing documentation** snippets from a vector store (FAISS).
-4.  **Generates new or updated documentation** based on the analysis and retrieved snippets.
-5.  **Creates a new pull request** with the documentation changes.
+3.  **Retrieves relevant existing documentation** snippets from a FAISS vector store.
+4.  **Decides to "Create" or "Update"**: Based on a confidence score, it either creates new documentation from scratch or rewrites existing documentation.
+5.  **Updates Knowledge Base**: The newly generated documentation is used to update a central `Knowledge_Base.md` file and the vector store, allowing the agent to learn from its own work.
+6.  **Creates a Pull Request** with the documentation changes.
 
 ## 2. Core Technologies
 
@@ -35,7 +36,7 @@ Follow these steps to get the project running on your local machine.
 
 ### Step 1: Clone the Repository
 
-First, clone the project repository to your local machine.
+First, clone the project repository to your local machine and navigate into the directory.
 
 ```bash
 git clone https://github.com/livingcool/doc-ops-agent.git
@@ -77,13 +78,18 @@ The backend is a Python FastAPI application.
 
     Open the `.env` file and add the following variables. See the next section for instructions on how to get these values.
 
-    ```env
+    ```dotenv
     # A secret phrase you create for verifying GitHub webhooks.
     # This MUST EXACTLY match the secret in your GitHub webhook settings.
     GITHUB_SECRET_TOKEN="your_strong_secret_here"
 
     # Your GitHub Personal Access Token for API actions
     GITHUB_API_TOKEN="ghp_YourGitHubTokenHere"
+
+    # (Optional) The GitHub username of the bot/user running the agent.
+    # This is used to prevent the agent from analyzing its own commits.
+    # Example: GITHUB_BOT_USERNAME="my-bot-account"
+    GITHUB_BOT_USERNAME=""
 
     # Your Google AI API key for Gemini
     GOOGLE_API_KEY="YourGoogleAIStudioAPIKeyHere"
@@ -191,6 +197,13 @@ Your setup is complete! Now you can test the agent's workflow.
 
 If the agent doesn't behave as expected, check for these common issues:
 
+*   **Agent is stuck in a loop, creating many PRs**:
+    *   **Symptom**: You see many `429 ResourceExhausted` errors in the logs, and the agent keeps creating new PRs for its own changes.
+    *   **Cause**: The agent is reacting to its own commits.
+    *   **Solution**: Set the `GITHUB_BOT_USERNAME` in your `.env` file to the GitHub username that the `GITHUB_API_TOKEN` belongs to. This will make the agent ignore its own activity.
+
+If the agent doesn't behave as expected, check for these common issues:
+
 *   **Gemini API Rate Limits Exceeded**:
     *   **Symptom**: The logs show a `ResourceExhausted: 429` error. This is common on the free tier of the Gemini API, which has a low request-per-minute limit.
     *   **Solution**: Wait a minute for the quota to reset. If this happens frequently, consider upgrading to a paid Google AI plan or adding more robust error handling with exponential backoff in `llm_clients.py`.
@@ -206,6 +219,32 @@ If the agent doesn't behave as expected, check for these common issues:
         1.  Check that your `ngrok` tunnel is still active and running.
         2.  In your GitHub repo's Webhook settings, go to "Recent Deliveries". Check if the latest event has a green checkmark. If it's a red "X", inspect the response body to see the error message returned from your local server.
         3.  Ensure the Payload URL is correct and that the webhook is subscribed to the right events (`Pull requests`).
+
+## 9. Deployment
+
+For a production environment, it's recommended to deploy the backend and frontend separately.
+
+### Backend to Render
+
+1.  **Create a New Web Service** on Render and connect it to your GitHub repository.
+2.  **Configure the service**:
+    *   **Environment**: `Python`
+    *   **Root Directory**: `backend`
+    *   **Build Command**: `pip install -r requirements.txt`
+    *   **Start Command**: `gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app`
+3.  **Add Environment Variables**: In the **Environment** tab, add `GITHUB_SECRET_TOKEN`, `GITHUB_API_TOKEN`, `GOOGLE_API_KEY`, and `GITHUB_BOT_USERNAME`.
+4.  **Deploy** and update your GitHub webhook to use the new Render URL (e.g., `https://your-app.onrender.com/api/webhook/github`).
+
+### Frontend to Vercel
+
+1.  **Import Project** on Vercel from your GitHub repository.
+2.  **Configure Project**:
+    *   Set the **Framework Preset** to `Create React App`.
+    *   Set the **Root Directory** to `frontend`.
+3.  **Configure Environment Variables**:
+    *   Add a variable named `REACT_APP_BACKEND_URL`.
+    *   Set its value to the public URL of your backend service on Render (e.g., `https://your-app-name.onrender.com`).
+4.  **Deploy**. Your live dashboard will now be available.
 
 ---
 

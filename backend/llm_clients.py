@@ -18,7 +18,7 @@ os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
 
 # Initialize the Generative AI model
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash-lite", 
+    model="gemini-1.5-flash-latest", 
     temperature=0.2 
 )
 
@@ -167,12 +167,9 @@ def get_summarizer_chain():
 You are a technical project manager who writes concise, formal changelogs.
 Based on the provided analysis and git diff, produce a single sentence that
 describes the change and its impact.
-
-Your response MUST be a single sentence that follows the format:
-"A push by {user_name} to the file `<file_name>` has <impact_description>."
-
-- You must determine the most relevant `<file_name>` from the git diff.
-- You must write the `<impact_description>` based on the AI analysis.
+Your response MUST be a single sentence.
+- Determine the most relevant file from the git diff.
+- Summarize the change based on the AI analysis.
 - Keep the `impact_description` brief and high-level.
 - Do not include "from this to that" or line numbers.
 """

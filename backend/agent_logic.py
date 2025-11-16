@@ -83,6 +83,9 @@ def _create_github_pr_sync(logger, repo_name, pr_number, pr_title, pr_body, sour
                 logger.info(f"Successfully updated file: {file_path}")
                 files_updated_count += 1
             except Exception as e:
+                if "409" in str(e):
+                    logger.error(f"GitHub 409 Conflict Error for file {file_path}. This is likely a race condition from another agent run. The file on the server has changed since this agent started.", exc_info=True)
+            except Exception as e:
                 logger.warning(f"Failed to update file {file_path}: {e}. Skipping...")
 
         # 6. Create the Pull Request
@@ -199,8 +202,9 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
             analysis_summary, k=5
         )
         
-        retrieved_docs = [doc for doc, score in docs_with_scores]
-        scores = [score for doc, score in docs_with_scores]
+        # FIX: Correctly unpack the list of (Document, score) tuples
+        retrieved_docs = [doc for doc, _ in docs_with_scores]
+        scores = [score for _, score in docs_with_scores]
         
         # Calculate confidence score (highest similarity)
         confidence_score = max(scores) if scores else 0.0

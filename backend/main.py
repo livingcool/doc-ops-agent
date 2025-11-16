@@ -18,6 +18,7 @@ import agent_logic
 load_dotenv()
 GITHUB_SECRET_TOKEN = os.getenv("GITHUB_SECRET_TOKEN")
 GITHUB_API_TOKEN = os.getenv("GITHUB_API_TOKEN")
+GITHUB_BOT_USERNAME = os.getenv("GITHUB_BOT_USERNAME")
 
 # --- Define base directory for pathing ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -107,6 +108,13 @@ async def handle_github_webhook(
     except json.JSONDecodeError:
         print("ERROR: Failed to decode JSON from webhook payload.")
         raise HTTPException(status_code=400, detail="Invalid JSON payload.")
+
+    # --- FEATURE: PREVENT FEEDBACK LOOPS ---
+    # If the bot username is set, ignore events triggered by the bot itself.
+    sender_login = payload.get("sender", {}).get("login")
+    if GITHUB_BOT_USERNAME and sender_login == GITHUB_BOT_USERNAME:
+        await push_log("log-skip", f"Ignoring event triggered by the agent itself ('{sender_login}').")
+        return {"status": "ok", "message": "Event from agent ignored to prevent feedback loop."}
 
 
     # --- Logic to handle MERGED PULL REQUEST events ---
