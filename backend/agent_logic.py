@@ -247,8 +247,7 @@ async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, 
 
         # --- Step 7: Package the results for the PR ---
         
-        # Get the raw source paths from metadata
-        raw_paths = list(set([doc.metadata.get('source') for doc in retrieved_docs]))
+        # --- THIS IS THE FIX: Use the `raw_paths` determined in the Create/Update logic ---
         source_files = []
         for path in raw_paths:
             # 1. Fix Windows slashes

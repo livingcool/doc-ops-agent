@@ -1,10 +1,10 @@
-# Doc-Ops Agent: User & Setup Guide
+# DocSmith: User & Setup Guide
 
-Welcome to the Doc-Ops Agent! This guide provides all the necessary steps to set up, configure, and run this project. This agent is an AI-powered tool that automatically generates documentation for your code changes and creates pull requests with the updates.
+Welcome to DocSmith! This guide provides all the necessary steps to set up, configure, and run this project. DocSmith is an AI-powered tool that automatically generates documentation for your code changes and creates pull requests with the updates.
 
 ## 1. Overview
 
-The Doc-Ops Agent listens for merged pull requests in a GitHub repository. When a PR is merged, it triggers the following workflow:
+DocSmith listens for merged pull requests in a GitHub repository. When a PR is merged, it triggers the following workflow:
 
 1.  **Analyzes the code diff** using an AI model (OpenAI).
 2.  **Determines if the change is significant** enough to warrant a documentation update.
@@ -14,7 +14,7 @@ The Doc-Ops Agent listens for merged pull requests in a GitHub repository. When 
 
 ## 2. Core Technologies
 
-*   **Backend**: Python, FastAPI, LangChain, OpenAI, PyGithub
+*   **Backend**: Python, FastAPI, LangChain, Google Gemini, PyGithub
 *   **Frontend**: React, Server-Sent Events (SSE) for live logging
 *   **Vector Store**: FAISS for efficient similarity search
 
@@ -26,7 +26,7 @@ Before you begin, ensure you have the following installed and configured:
 -   **Node.js and npm**: [Download Node.js](https://nodejs.org/en/download/)
 -   **Git**: [Download Git](https://git-scm.com/downloads/)
 -   **GitHub Account**: You will need a personal GitHub account.
--   **OpenAI API Key**: You need an API key from OpenAI to power the AI analysis. [Get an API Key](https://platform.openai.com/api-keys).
+-   **Google AI API Key**: You need an API key for the Gemini API to power the AI analysis. [Get an API Key](https://ai.google.dev/gemini-api/docs/api-key).
 -   **ngrok**: A tool to expose your local server to the internet so GitHub's webhooks can reach it. [Download ngrok](https://ngrok.com/download).
 
 ## 4. Setup and Installation
@@ -84,8 +84,8 @@ The backend is a Python FastAPI application.
     # Your GitHub Personal Access Token for API actions
     GITHUB_API_TOKEN="ghp_YourGitHubTokenHere"
 
-    # Your OpenAI API key
-    OPENAI_API_KEY="sk-YourOpenAIKeyHere"
+    # Your Google AI API key for Gemini
+    GOOGLE_API_KEY="YourGoogleAIStudioAPIKeyHere"
 
     # (Optional) The minimum confidence score required to update a document
     CONFIDENCE_THRESHOLD=0.2
@@ -113,7 +113,7 @@ The agent needs this token to create branches and pull requests on your behalf.
 
 1.  Go to **GitHub Settings** > **Developer settings** > **Personal access tokens** > **Tokens (classic)**.
 2.  Click **Generate new token** (or **Generate new token (classic)**).
-3.  Give it a descriptive name (e.g., "Doc-Ops Agent").
+3.  Give it a descriptive name (e.g., "DocSmith").
 4.  Set the **Expiration** as needed (e.g., 90 days).
 5.  Select the following **scopes**:
     *   `repo` (Full control of private repositories)
@@ -123,7 +123,7 @@ The agent needs this token to create branches and pull requests on your behalf.
 
 This is a secret phrase you create. It should be a long, random string. You will use this same secret when setting up the webhook in your GitHub repository.
 
-#### OpenAI API Key (`OPENAI_API_KEY`)
+#### Google AI API Key (`GOOGLE_API_KEY`)
 
 1.  Log in to your OpenAI Platform account.
 2.  Go to the **API Keys** section.
@@ -181,22 +181,22 @@ Now, you need to tell GitHub where to send events. This should be done on the re
 
 ## 8. How to Use the Agent
 
-Your setup is complete! Now you can test the agent's workflow.
+Your setup is complete! Now you can test DocSmith's workflow.
 
 1.  **Make a Code Change**: In the repository where you set up the webhook, make a change to a file and push it to a new branch.
 2.  **Create a Pull Request**: Create a PR to merge your changes into the default branch (e.g., `main`).
 3.  **Merge the Pull Request**: Once the PR is merged, GitHub will send a notification to your running agent.
 4.  **Observe the Live Feed**: Look at the frontend at `http://localhost:3000`. You will see the agent start its analysis, logging each step in real-time.
-5.  **Check for the New PR**: After a minute or two, a new pull request, created by the agent, will appear in your repository. This PR will contain the AI-generated documentation updates.
+5.  **Check for the New PR**: After a minute or two, a new pull request, created by DocSmith, will appear in your repository. This PR will contain the AI-generated documentation updates.
 6.  **Check the Logs**: The `backend/doc_ops_agent.log` file will contain a detailed history of the agent's runs.
 
 ---
 
-You are now ready to use the Doc-Ops Agent like a pro! If you encounter any issues, check the terminal output for errors in the backend, frontend, and ngrok consoles.
+You are now ready to use DocSmith like a pro! If you encounter any issues, check the terminal output for errors in the backend, frontend, and ngrok consoles.
 
 ## 9. Deployment to Render
 
-To deploy the backend to a persistent cloud service like Render, follow these steps. This avoids the need to run `ngrok` locally.
+To deploy the backend to a persistent cloud service like Render, follow these steps. This avoids the need to run `ngrok` locally for a production setup.
 
 1.  **Create a New Web Service** on Render and connect it to your GitHub repository.
 2.  **Configure the service** with the following settings:
@@ -208,7 +208,7 @@ To deploy the backend to a persistent cloud service like Render, follow these st
     *   **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 10000`
         *   Use the port recommended by Render (e.g., `10000`).
 3.  **Add Environment Variables**: Go to the **Environment** tab for your new service and add the same `GITHUB_SECRET_TOKEN`, `GITHUB_API_TOKEN`, and `OPENAI_API_KEY` that you have in your local `.env` file.
-4.  **Deploy**: Trigger a manual deploy.
+4.  **Deploy**: Trigger a manual deploy from the Render dashboard to start the service.
 5.  **Update Your Webhook**: Once deployed, Render will provide a public URL (e.g., `https://your-app-name.onrender.com`). Update your GitHub webhook's **Payload URL** to point to this new URL (e.g., `https://your-app-name.onrender.com/api/webhook/github`).
 
 Your agent is now live and will run automatically in the cloud!

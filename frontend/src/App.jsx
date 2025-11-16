@@ -37,7 +37,7 @@ export default function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Autonomous Doc-Ops Agent</h1>
+        <h1>DocSmith</h1>
         <div className="header-controls">
           <StatusBadge status={status} />
           <DarkModeToggle />
