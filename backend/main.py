@@ -199,10 +199,12 @@ async def handle_github_webhook(
 async def root():
     return {"status": "DocSmith is running"}
 
+# --- Startup Messages ---
+print("--- Starting DocSmith Backend ---")
+print("Listening for GitHub webhooks for 'pull_request' (merged) and 'push' events.")
+print("--- AI Models are warming up... ---")
+
 # --- Run the server (for local testing) ---
 if __name__ == "__main__":
     import uvicorn
-    print("--- Starting DocSmith Backend ---")
-    print("Listening for GitHub webhooks for 'pull_request' (merged) and 'push' events.")
-    print("--- AI Models are warming up... ---")
     uvicorn.run(app, host="0.0.0.0", port=8000)
