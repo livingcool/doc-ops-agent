@@ -1978,3 +1978,7 @@ google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash-latest is not f
 2025-11-16 23:16:46,923 - Successfully updated file: backend/data/Knowledge_Base.md
 2025-11-16 23:16:49,153 - This is an AI-generated documentation update for PR #81dba42, originally authored by @livingcool.
 Original PR: 'Push to main: LLm model changed' AI Analysis: Functional change: The model name 'gemini-1.5-flash-latest' was changed to 'gemini-2.5-flash-lite' due to a 'NotFound: 404' error, indicating a change in the available or supported AI models.
+2025-11-16 23:25:02,149 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-16 23:25:14,311 - Successfully updated file: backend/data/Knowledge_Base.md
+2025-11-16 23:25:16,302 - This is an AI-generated documentation update for PR #e48f5ab, originally authored by @livingcool.
+Original PR: 'Push to main: changes made' AI Analysis: Functional change: Updated the Generative AI model name from 'gemini-1.5-flash-latest' to 'gemini-2.5-flash-lite' to resolve a 'NotFound: 404' error.

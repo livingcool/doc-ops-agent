@@ -19,6 +19,21 @@ DocSmith listens for `push` and merged `pull_request` events in a GitHub reposit
 *   **Frontend**: React, Server-Sent Events (SSE) for live logging
 *   **Vector Store**: FAISS for efficient similarity search
 
+## Project Vision & Use Cases
+
+### About This Project
+
+DocSmith is born from the idea that documentation should be a living, breathing part of the development lifecycle, not an afterthought. It acts as an autonomous AI software engineer on your team whose sole responsibility is to keep documentation in sync with the codebase. By watching for code changes, understanding their impact, and automatically creating documentation pull requests, DocSmith aims to eliminate the toil of manual documentation and prevent knowledge from becoming stale.
+
+The core philosophy is "docs-as-code-as-a-service". The agent not only writes documentation but also learns from every change it documents, continuously improving its own knowledge base to make future documentation even more accurate and context-aware.
+
+### Use Cases
+
+*   **Rapidly Growing Startups:** For fast-moving teams where features are built and shipped quickly, DocSmith ensures that documentation doesn't fall behind, making onboarding new engineers easier and maintaining a clear record of how the product has evolved.
+*   **Open Source Projects:** Maintainers can offload the often-thankless task of documentation. DocSmith helps ensure that contributions are properly documented, improving the quality of the project and making it more accessible to new contributors.
+*   **Large Enterprise Teams:** In complex codebases with many contributors, DocSmith can act as a centralized "librarian," ensuring that changes to shared libraries, APIs, or services are consistently documented and communicated across teams.
+*   **Personal Projects:** For solo developers, DocSmith acts as a diligent note-taker, ensuring that you can step away from a project for months and come back to clear, up-to-date documentation that explains your past work.
+
 ## 3. Prerequisites
 
 Before you begin, ensure you have the following installed and configured:
