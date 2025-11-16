@@ -1,15 +1,4 @@
-# Doc-Ops Agent
-
-This project provides an automated agent that monitors GitHub repositories for code changes. It analyzes these changes, retrieves relevant existing documentation, and either updates the documentation or creates new documentation if none exists. The agent then automatically creates a pull request with the generated documentation updates.
-
-## Purpose
-
-The primary goal of this project is to streamline and improve the documentation process for software projects. By automatically generating and updating documentation based on code changes, it aims to:
-
-*   **Keep documentation up-to-date:** Reduce the burden on developers to manually update documentation, ensuring it accurately reflects the current codebase.
-*   **Improve documentation quality:** Leverage AI to generate clear, concise, and contextually relevant documentation.
-*   **Enhance discoverability:** Make it easier for team members and contributors to find and understand project information.
-*   **Automate repetitive tasks:** Free up developer time by handling the creation and updating of documentation automatically.
+The `CONFIDENCE_THRESHOLD` environment variable can now be used to configure the minimum confidence score required for documentation updates. The default value is set to `0.2`.
 
 ## Core Technologies
 
@@ -40,11 +29,9 @@ The system is designed around a central FastAPI application that listens for Git
     *   **`run_agent_analysis`:** This is the core of the agent.
         *   It first uses an `analyzer_chain` (powered by LangChain) to analyze the provided `git_diff`, determining if it's a functional change and summarizing it.
         *   If it's a functional change, it uses a `retriever` (powered by FAISS and HuggingFace embeddings) to search a vector store of existing documentation for relevant snippets based on the analysis summary.
-        *   **Update Mode:** If relevant documentation is found and the confidence score is above a threshold, it uses a `rewriter_chain` to generate updated documentation based on the analysis and the retrieved snippets.
+        *   **Update Mode:** If relevant documentation is found and the confidence score is above a configurable `CONFIDENCE_THRESHOLD` (defaults to 0.2), it uses a `rewriter_chain` to generate updated documentation based on the analysis and the retrieved snippets.
         *   **Create Mode:** If no relevant documentation is found, it uses a `creator_chain` to generate entirely new documentation based on the analysis and the diff.
         *   **Knowledge Base Update:** The newly generated documentation is appended to a central `Knowledge_Base.md` file.
-        *   **Vector Store Re-indexing:** After updating the knowledge base, the `vector_store.create_vector_store()` function is called to rebuild the FAISS index, incorporating the new information. This makes the agent immediately "smarter" for subsequent runs.
-        *   **Pull Request Creation:** Finally, it uses the `create_github_pr_async` function to create a new branch, stage the changes, and open a pull request on GitHub with the generated documentation.
 
 3.  **Vector Store (`vector_store.py`):**
     *   **`create_vector_store`:** This function is responsible for building the FAISS index.
@@ -63,120 +50,20 @@ The system is designed around a central FastAPI application that listens for Git
 5.  **Environment Variables:**
     *   `GITHUB_SECRET_TOKEN`: Used to verify incoming GitHub webhooks.
     *   `GITHUB_API_TOKEN`: Used by the agent to authenticate with the GitHub API for fetching diffs and creating pull requests.
+    *   `CONFIDENCE_THRESHOLD`: A float value (defaulting to 0.2) used to gate documentation updates. If the confidence score of retrieved documentation is below this threshold, the update is skipped.
 
 In essence, the system acts as an automated documentation assistant. It watches for code changes, uses AI to understand them and interact with existing knowledge, updates that knowledge, and then proposes the documentation changes back to the project via a pull request.
 
 ---
 
-### AI-Generated Update (2025-11-16 11:47:09)
-
-2.  **Agent Logic (`agent_logic.py`):**
-    *   **`run_agent_analysis`:** This is the core of the agent.
-        *   It first uses an `analyzer_chain` (powered by LangChain) to analyze the provided `git_diff`, determining if it's a functional change and summarizing it.
-        *   If it's a functional change, it uses a `retriever` (powered by FAISS and HuggingFace embeddings) to search a vector store of existing documentation for relevant snippets based on the analysis summary.
-        *   **Update Mode:** If relevant documentation is found and the confidence score is above a configurable `CONFIDENCE_THRESHOLD` (defaults to 0.2), it uses a `rewriter_chain` to generate updated documentation based on the analysis and the retrieved snippets.
-        *   **Create Mode:** If no relevant documentation is found, it uses a `creator_chain` to generate entirely new documentation based on the analysis and the diff.
-        *   **Knowledge Base Update:** The newly generated documentation is appended to a central `Knowledge_Base.md` file.
-
---- Snippet 1 (Source: data\Knowledge_Base.md) ---
-2.  **Agent Logic (`agent_logic.py`):**
-    *   **`run_agent_analysis`:** This is the core of the agent.
-        *   It first uses an `analyzer_chain` (powered by LangChain) to analyze the provided `git_diff`, determining if it's a functional change and summarizing it.
-        *   If it's a functional change, it uses a `retriever` (powered by FAISS and HuggingFace embeddings) to search a vector store of existing documentation for relevant snippets based on the analysis summary.
-        *   **Update Mode:** If relevant documentation is found and the confidence score is above a configurable `CONFIDENCE_THRESHOLD` (defaults to 0.2), it uses a `rewriter_chain` to generate updated documentation based on the analysis and the retrieved snippets.
-        *   **Create Mode:** If no relevant documentation is found, it uses a `creator_chain` to generate entirely new documentation based on the analysis and the diff.
-        *   **Knowledge Base Update:** The newly generated documentation is appended to a central `Knowledge_Base.md` file.
-
---- Snippet 2 (Source: agent_logic.py) ---
-# --- Step 9: Log the final result ---
-        if "Successfully" in result_message:
-            # On success, log the specific format you requested.
-            log_entry = (
-                f"This is an AI-generated documentation update for PR #{pr_number}, "
-                f"originally authored by @{user_name}.\n"
-                f"Original PR: '{pr_title}' AI Analysis: {analysis_summary}"
-            )
-            logger.info(log_entry)
-        else:
-            # On failure, log a simpler error message for clarity.
-            logger.error(
-                f"AGENT FAILED for PR #{pr_number} ({repo_name}). Reason: {result_message}"
-            )
-
-    except Exception as e:
-        logger.error(f"Agent failed for PR #{pr_number} ({repo_name}) with error: {e}", exc_info=True)
-        await broadcaster("log-error", f"Agent failed with error: {e}")
-        return
-
---- Snippet 3 (Source: agent_logic.py) ---
-await broadcaster("log-step", f"Found {len(retrieved_docs)} relevant doc snippets. Confidence: {confidence_percent}")
-        
-        # --- THIS IS THE CORE LOGIC CHANGE ---
-        if not retrieved_docs:
-            # --- CREATE MODE ---
-            await broadcaster("log-step", "No relevant docs found. Switching to 'Create Mode'...")
-            new_documentation = await creator_chain.ainvoke({
-                "analysis_summary": analysis_summary,
-                "git_diff": git_diff
-            })
-            # For creation, the source file is always the main knowledge base
-            raw_paths = [os.path.join('data', 'Knowledge_Base.md')]
-        else:
-            # --- UPDATE MODE ---
-            # Make the confidence threshold configurable for easier testing
-            confidence_threshold = float(os.getenv("CONFIDENCE_THRESHOLD", 0.2))
-            if confidence_score < confidence_threshold: # Gatekeeping based on confidence
-                await broadcaster("log-skip", f"Confidence ({confidence_percent}) is below threshold. Skipping doc update.")
-                return
-
---- Snippet 4 (Source: agent_logic.py) ---
-def _append_to_file_sync(file_path: str, content: str):
-    """Synchronous file append operation."""
-    with open(file_path, "a", encoding="utf-8") as f:
-        f.write(content)
-
-# --- Updated Core Agent Logic ---
-
-async def run_agent_analysis(logger, broadcaster, git_diff: str, pr_title: str, repo_name: str, pr_number: str, user_name: str):
-    """This is the main 'brain' of the agent. It runs the full analysis-retrieval-rewrite pipeline."""
-    
-    if not retriever:
-        print("Agent failed: AI components are not initialized.")
-        await broadcaster("log-error", "Error: Agent AI components are not ready.")
-        return
-
---- Snippet 5 (Source: agent_logic.py) ---
-if "Error" in pr_url:
-                result_message = f"Failed to create PR. Reason: {pr_url}"
-                await broadcaster("log-error", f"Failed to create PR: {pr_url}")
-            else:
-                result_message = f"Successfully created documentation PR: {pr_url}"
-                await broadcaster("log-action", f"✅ Successfully created PR: {pr_url}")
-
-        except Exception as e:
-            result_message = f"Agent failed during PR creation with error: {e}"
-            await broadcaster("log-error", f"Agent failed with error: {e}")
-            # Log the exception traceback for debugging
-            logger.error(f"Agent failed for PR #{pr_number} ({repo_name}) with error: {e}", exc_info=True)
-        
----
 ### Relevant Code Changes
+
 ```diff
 diff --git a/backend/USER_GUIDE.md b/backend/USER_GUIDE.md
 index 31b5e7c..629049c 100644
 --- a/backend/USER_GUIDE.md
 +++ b/backend/USER_GUIDE.md
-@@ -86,6 +86,9 @@ The backend is a Python FastAPI application.
- 
-     # Your OpenAI API key
-     OPENAI_API_KEY="sk-YourOpenAIKeyHere"
-+
-+    # (Optional) The minimum confidence score required to update a document
-+    CONFIDENCE_THRESHOLD=0.2
-     ```
- 
- ### Step 3: Frontend Setup
-@@ -203,7 +206,7 @@ To deploy the backend to a persistent cloud service like Render, follow these st
+@@ -86,7 +86,7 @@ The backend is a Python FastAPI application.
      *   **Build Command**: `pip install -r requirements.txt`
          *   This is usually the default and is correct.
      *   **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 10000`
@@ -199,5 +86,4 @@ index 194eafb..3b3f53d 100644
 +            if confidence_score < confidence_threshold: # Gatekeeping based on confidence
                  await broadcaster("log-skip", f"Confidence ({confidence_percent}) is below threshold. Skipping doc update.")
                  return
- 
 ```
