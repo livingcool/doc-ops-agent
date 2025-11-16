@@ -66,18 +66,33 @@ def create_vector_store():
     # Define loader arguments to handle encoding errors
     loader_kwargs = {'encoding': 'utf-8', 'autodetect_encoding': True} # <-- Encoding fix
 
-    # 1. Load all .md documents from the /data directory
-    loader = DirectoryLoader(
+    # --- THIS IS THE CHANGE: Load both Markdown and Python files ---
+    print("Loading documents from all sources (.md and .py files)...")
+    
+    # 1a. Load all .md documents from the /data directory
+    md_loader = DirectoryLoader(
         DATA_PATH, 
         glob="**/*.md", 
         loader_cls=TextLoader,
-        loader_kwargs=loader_kwargs,  # <-- Added loader_kwargs
+        loader_kwargs=loader_kwargs,
+        show_progress=True,
+        use_multithreading=True
+    )
+    
+    # 1b. Load all .py source code files from the current (backend) directory
+    py_loader = DirectoryLoader(
+        '.', # Current directory
+        glob="**/*.py",
+        loader_cls=TextLoader,
+        loader_kwargs=loader_kwargs,
         show_progress=True,
         use_multithreading=True
     )
     
     try:
-        documents = loader.load()
+        md_docs = md_loader.load()
+        py_docs = py_loader.load()
+        documents = md_docs + py_docs
     except Exception as e:
         print(f"Error loading documents: {e}")
         return None
