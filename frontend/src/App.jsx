@@ -11,7 +11,7 @@ import { LogIcon } from './components/LogIcon.jsx';
 
 import './App.css'; // Your component styles
 
-const BACKEND_STREAM_URL = "http://localhost:8000/api/stream/logs";
+const BACKEND_STREAM_URL = "https://doc-ops-agent-backend.onrender.com/api/stream/logs";
 
 export default function App() {
   const { logs, status } = useEventSource(BACKEND_STREAM_URL);
