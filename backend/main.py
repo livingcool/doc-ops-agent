@@ -63,7 +63,10 @@ async def stream_logs(request: Request):
 
 # --- 2. The "GitHub Webhook" Endpoint (for GitHub) ---
 @app.post("/api/webhook/github")
-async def handle_github_webhook(request: Request, x_hub_signature_256: str = Header(None)):
+async def handle_github_webhook(
+    request: Request, 
+    x_github_event: str = Header(None), 
+    x_hub_signature_256: str = Header(None)):
     raw_body = await request.body()
     
     if not GITHUB_SECRET_TOKEN:
@@ -86,51 +89,97 @@ async def handle_github_webhook(request: Request, x_hub_signature_256: str = Hea
 
     payload = await request.json()
 
-    if payload.get("action") == "closed" and payload.get("pull_request", {}).get("merged") == True:
-        
+    # --- Logic to handle MERGED PULL REQUEST events ---
+    if x_github_event == "pull_request" and payload.get("action") == "closed" and payload.get("pull_request", {}).get("merged"):
         pr_title = payload.get("pull_request", {}).get("title", "Untitled PR")
         repo_name = payload.get("repository", {}).get("full_name")
         pr_number = payload.get("pull_request", {}).get("number")
         user_name = payload.get("pull_request", {}).get("user", {}).get("login", "unknown-user")
-        
-        # --- START OF THE FIX ---
-        # We need the PR's diff_url to fetch the diff
         diff_url = payload.get("pull_request", {}).get("diff_url")
+
         if not diff_url:
             await push_log("log-error", "Failed to get diff_url from payload.")
             return {"status": "error", "message": "diff_url not found"}
             
         await push_log("log-trigger", f"PR Merged: '{pr_title}'. Agent is starting...")
 
-        # 5. Get the code diff using the GitHub API
         try:
-            # We must fetch the diff from the diff_url
             headers = {
                 "Authorization": f"token {GITHUB_API_TOKEN}",
-                "Accept": "application/vnd.github.v3.diff" # Ask for the diff format
+                "Accept": "application/vnd.github.v3.diff"
             }
             git_diff_response = requests.get(diff_url, headers=headers)
-            git_diff_response.raise_for_status() # Raise error for bad responses
+            git_diff_response.raise_for_status()
             git_diff = git_diff_response.text
             
-            # --- END OF THE FIX ---
-            
-            # --- 6. Start the Agent (in the background) ---
             asyncio.create_task(
                 agent_logic.run_agent_analysis(
                     logger=logger,
                     broadcaster=push_log,
                     git_diff=git_diff,
-                    pr_title=pr_title,
+                    pr_title=f"PR #{pr_number}: {pr_title}", # Provide more context
                     repo_name=repo_name,
                     pr_number=pr_number,
                     user_name=user_name
                 )
             )
-
         except Exception as e:
             print(f"Error fetching diff: {e}")
             await push_log("log-error", f"Failed to fetch diff from GitHub: {e}")
+
+    # --- NEW: Logic to handle PUSH events ---
+    elif x_github_event == "push":
+        # Ignore pushes to deleted branches
+        if payload.get('deleted'):
+            return {"status": "ok", "message": "Ignoring push to deleted branch"}
+
+        repo_name = payload.get("repository", {}).get("full_name")
+        pusher_name = payload.get("pusher", {}).get("name", "unknown-user")
+        branch = payload.get('ref', 'refs/heads/unknown').split('/')[-1]
+        compare_url = payload.get("compare")
+
+        if not compare_url:
+            await push_log("log-skip", f"Push by {pusher_name} to {branch} had no changes to compare.")
+            return {"status": "ok", "message": "No compare URL, likely a new branch."}
+
+        # The title for a push is the last commit message
+        last_commit = payload.get("head_commit")
+        if not last_commit:
+            await push_log("log-skip", f"Push by {pusher_name} to {branch} had no commits.")
+            return {"status": "ok", "message": "No head_commit in push payload."}
+
+        push_title = last_commit.get("message", "Untitled Push")
+        # Use the commit ID as the "number" for the agent
+        push_id = last_commit.get("id")[:7] 
+
+        await push_log("log-trigger", f"Push to '{branch}' by {pusher_name}. Agent is starting...")
+
+        try:
+            # The diff URL for a push is the compare URL with .diff appended
+            diff_url = f"{compare_url}.diff"
+            headers = {
+                "Authorization": f"token {GITHUB_API_TOKEN}",
+                "Accept": "application/vnd.github.v3.diff"
+            }
+            git_diff_response = requests.get(diff_url, headers=headers)
+            git_diff_response.raise_for_status()
+            git_diff = git_diff_response.text
+
+            # Start the agent analysis in the background
+            asyncio.create_task(
+                agent_logic.run_agent_analysis(
+                    logger=logger,
+                    broadcaster=push_log,
+                    git_diff=git_diff,
+                    pr_title=f"Push to {branch}: {push_title}", # Title for the log
+                    repo_name=repo_name,
+                    pr_number=push_id, # Use commit hash as a unique identifier
+                    user_name=pusher_name
+                )
+            )
+        except Exception as e:
+            print(f"Error fetching diff for push: {e}")
+            await push_log("log-error", f"Failed to fetch diff from GitHub for push: {e}")
 
     return {"status": "ok"}
 
