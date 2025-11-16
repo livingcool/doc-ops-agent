@@ -11,7 +11,7 @@ import { LogIcon } from './components/LogIcon.jsx';
 
 import './App.css'; // Your component styles
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://docsmith-backend.onrender.com";
 const BACKEND_STREAM_URL = `${BACKEND_URL}/api/stream/logs`;
 
 export default function App() {
